@@ -18,9 +18,9 @@
       </el-form-item>
       <el-form-item prop="verification" label="验证码">
         <el-input type="text" placeholder="请输入验证码" v-model="verificationLogin.verification" name="verification">
-          <el-button slot="append" type="primary" :loading="isLoginCaptcha" @click="loginCaptcha()"
-            >获取验证码</el-button
-          >
+          <el-button slot="append" type="primary" :loading="isLoginCaptcha" @click="loginCaptcha()">{{
+            buttonName
+          }}</el-button>
         </el-input>
       </el-form-item>
       <el-form-item>
@@ -63,9 +63,9 @@
         <el-form-item prop="verification" label="验证码">
           <!-- <el-button type="primary" @click="captcha()">获取验证码</el-button> -->
           <el-input type="text" placeholder="请输入验证码" v-model="register.verification" name="verification">
-            <el-button slot="append" type="primary" :loading="isgettingLoading" @click="captcha()"
-              >获取验证码</el-button
-            >
+            <el-button slot="append" type="primary" :loading="isgettingLoading" @click="captcha()">{{
+              buttonName1
+            }}</el-button>
           </el-input>
         </el-form-item>
         <el-form-item prop="name" label="用户名">
@@ -111,9 +111,9 @@
             v-model="verificationChange.verification"
             name="verification"
           >
-            <el-button slot="append" type="primary" :loading="isgettingLoading2" @click="captcha2()"
-              >获取验证码</el-button
-            >
+            <el-button slot="append" type="primary" :loading="isgettingLoading2" @click="captcha2()">{{
+              buttonName2
+            }}</el-button>
           </el-input>
         </el-form-item>
         <el-form-item prop="newPassword" label="新密码">
@@ -151,7 +151,7 @@ export default {
       }
     }
     let checkPassword2 = (rule, value, callback) => {
-      if (value === '') {
+      if (value === '' || value == undefined) {
         callback(new Error('请再次输入密码'))
       } else if (value !== this.register.password) {
         callback(new Error('两次输入密码不一致!'))
@@ -277,7 +277,13 @@ export default {
       isgettingLoading2: false,
       isLoginCaptcha: false,
       isLogining: false,
-      captchaNum: ''
+      captchaNum: '',
+      buttonName: '获取验证码',
+      buttonName1: '获取验证码',
+      buttonName2: '获取验证码',
+      time: 60,
+      time1: 60,
+      time2: 60
     }
   },
   methods: {
@@ -291,25 +297,47 @@ export default {
       }
     },
     loginCaptcha() {
-      this.isLoginCaptcha = true
-      let content = {}
-      content.username = this.verificationLogin.username
-      content.type = this.userNameType(this.verificationLogin.username)
-      content = JSON.stringify(content)
-      console.log(content)
-      // loginApi
-      //   .verification(content)
-      //   .then((response) => {
-      //     console.log(response)
-      //     if (response.data.code === 0) {
-      //       this.$message({ message: '获取成功。', type: 'success' })
-      //     } else {
-      //       this.$message({ message: '获取失败。', type: 'error' })
-      //     }
-      //     this.isLoginCaptcha = false
-      //   })
-      //   .catch(() => {})
-      //   .then(() => {})
+      if (this.verificationLogin.username) {
+        let phone = /^1\d{10}$/
+        let email = /^(\w-*\.*)+@(\w-?)+(\.\w{2,})+$/
+        if (phone.test(this.verificationLogin.username) || email.test(this.verificationLogin.username)) {
+          this.isLoginCaptcha = true
+          let content = {}
+          content.username = this.verificationLogin.username
+          content.type = this.userNameType(this.verificationLogin.username)
+          content = JSON.stringify(content)
+          let me = this
+          // me.isDisabled = true
+          let interval = window.setInterval(function () {
+            me.buttonName = '（' + me.time + '秒）后可重新发送'
+            --me.time
+            if (me.time < 0) {
+              me.buttonName = '重新发送'
+              me.time = 60
+              // me.isDisabled = false
+              me.isLoginCaptcha = false
+              window.clearInterval(interval)
+            }
+          }, 1000)
+          // loginApi
+          //   .verification(content)
+          //   .then((response) => {
+          //     console.log(response)
+          //     if (response.data.code === 0) {
+          //       this.$message({ message: '获取成功。', type: 'success' })
+          //     } else {
+          //       this.$message({ message: '获取失败。', type: 'error' })
+          //     }
+          //     this.isLoginCaptcha = false
+          //   })
+          //   .catch(() => {})
+          //   .then(() => {})
+        } else {
+          this.$message.error('邮箱/手机号格式填写不正确')
+        }
+      } else {
+        this.$message.error('请先填写邮箱/手机号')
+      }
     },
     vLogin() {
       this.$refs.verificationLogin.validate((valid) => {
@@ -346,28 +374,50 @@ export default {
       })
     },
     captcha() {
-      this.isgettingLoading = true
-      let content = {}
-      content.username = this.register.username
-      content.type = this.userNameType(this.register.username)
-      content = JSON.stringify(content)
-      console.log(content)
-      // loginApi
-      //   .verification(content)
-      //   .then((response) => {
-      //     console.log(response)
-      //     if (response.data.code === 0) {
-      //       this.captchaNum = response.data.data
-      //       this.$message({ message: '获取成功。', type: 'success' })
-      //     } else {
-      //       this.$message({ message: '获取失败。', type: 'error' })
-      //     }
-      //     this.isgettingLoading = false
-      //   })
-      //   .catch(() => {})
-      //   .then(() => {
-      //     this.isEditSubmitting = false
-      //   })
+      if (this.register.username) {
+        let phone = /^1\d{10}$/
+        let email = /^(\w-*\.*)+@(\w-?)+(\.\w{2,})+$/
+        if (phone.test(this.register.username) || email.test(this.register.username)) {
+          this.isgettingLoading = true
+          let content = {}
+          content.username = this.register.username
+          content.type = this.userNameType(this.register.username)
+          content = JSON.stringify(content)
+          let me = this
+          // me.isDisabled = true
+          let interval1 = window.setInterval(function () {
+            me.buttonName1 = '（' + me.time1 + '秒）后可重新发送'
+            --me.time1
+            if (me.time1 < 0) {
+              me.buttonName1 = '重新发送'
+              me.time1 = 60
+              // me.isDisabled = false
+              me.isgettingLoading = false
+              window.clearInterval(interval1)
+            }
+          }, 1000)
+          // loginApi
+          //   .verification(content)
+          //   .then((response) => {
+          //     console.log(response)
+          //     if (response.data.code === 0) {
+          //       this.captchaNum = response.data.data
+          //       this.$message({ message: '获取成功。', type: 'success' })
+          //     } else {
+          //       this.$message({ message: '获取失败。', type: 'error' })
+          //     }
+          //     this.isgettingLoading = false
+          //   })
+          //   .catch(() => {})
+          //   .then(() => {
+          //     this.isEditSubmitting = false
+          //   })
+        } else {
+          this.$message.error('邮箱/手机号格式填写不正确')
+        }
+      } else {
+        this.$message.error('请先填写邮箱/手机号')
+      }
     },
     create() {
       this.$refs.register.validate((valid) => {
@@ -402,27 +452,49 @@ export default {
       })
     },
     captcha2() {
-      this.isgettingLoading2 = true
-      let content = {}
-      content.username = this.verificationChange.username
-      content.type = this.userNameType(this.verificationChange.username)
-      content = JSON.stringify(content)
-      console.log(content)
-      // loginApi
-      //   .verification(content)
-      //   .then((response) => {
-      //     console.log(response)
-      //     if (response.data.code === 0) {
-      //       this.$message({ message: '获取成功。', type: 'success' })
-      //     } else {
-      //       this.$message({ message: '获取失败。', type: 'error' })
-      //     }
-      //     this.isgettingLoading2 = false
-      //   })
-      //   .catch(() => {})
-      //   .then(() => {
-      //     this.isEditSubmitting2 = false
-      //   })
+      if (this.verificationChange.username) {
+        let phone = /^1\d{10}$/
+        let email = /^(\w-*\.*)+@(\w-?)+(\.\w{2,})+$/
+        if (phone.test(this.verificationChange.username) || email.test(this.verificationChange.username)) {
+          this.isgettingLoading2 = true
+          let content = {}
+          content.username = this.verificationChange.username
+          content.type = this.userNameType(this.verificationChange.username)
+          content = JSON.stringify(content)
+          let me = this
+          // me.isDisabled = true
+          let interval = window.setInterval(function () {
+            me.buttonName2 = '（' + me.time2 + '秒）后可重新发送'
+            --me.time2
+            if (me.time2 < 0) {
+              me.buttonName2 = '重新发送'
+              me.time2 = 60
+              // me.isDisabled = false
+              me.isgettingLoading2 = false
+              window.clearInterval(interval)
+            }
+          }, 1000)
+          // loginApi
+          //   .verification(content)
+          //   .then((response) => {
+          //     console.log(response)
+          //     if (response.data.code === 0) {
+          //       this.$message({ message: '获取成功。', type: 'success' })
+          //     } else {
+          //       this.$message({ message: '获取失败。', type: 'error' })
+          //     }
+          //     this.isgettingLoading2 = false
+          //   })
+          //   .catch(() => {})
+          //   .then(() => {
+          //     this.isEditSubmitting2 = false
+          //   })
+        } else {
+          this.$message.error('邮箱/手机号格式填写不正确')
+        }
+      } else {
+        this.$message.error('请先填写邮箱/手机号')
+      }
     },
     changePassword() {
       this.$refs.verificationChange.validate((valid) => {
