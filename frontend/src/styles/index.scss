@@ -45,3 +45,13 @@ a:visited {
   flex: 1;
   overflow: auto;
 }
+.el-dialog__header {
+  border-bottom: 1px solid #e0e0e0;
+  padding: 10px 10px 10px;
+  background: #f7f7f7;
+}
+.el-dialog__footer {
+  background: #f7f7f7;
+  padding: 10px 10px 10px;
+  border-top: 1px solid #e0e0e0;
+}

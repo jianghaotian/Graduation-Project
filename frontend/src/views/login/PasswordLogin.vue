@@ -30,7 +30,7 @@
         class="demo-ruleForm"
         v-loading="isEditLoading"
       >
-        <el-form-item prop="username" label="邮箱/手机号">
+        <el-form-item prop="username" label="邮箱/手机号" size="mini">
           <el-input
             maxlength="32"
             type="text"
@@ -40,10 +40,10 @@
             autofocus="autofocus"
           ></el-input>
         </el-form-item>
-        <el-form-item prop="password" label="密码">
+        <el-form-item prop="password" label="密码" size="mini">
           <el-input placeholder="请输入密码" v-model="register.password" name="password" show-password></el-input>
         </el-form-item>
-        <el-form-item prop="checkPassword" label="确认密码">
+        <el-form-item prop="checkPassword" label="确认密码" size="mini">
           <el-input
             placeholder="请确认密码"
             v-model="register.checkPassword"
@@ -51,7 +51,7 @@
             show-password
           ></el-input>
         </el-form-item>
-        <el-form-item prop="verification" label="验证码">
+        <el-form-item prop="verification" label="验证码" size="mini">
           <!-- <el-button type="primary" @click="captcha()">获取验证码</el-button> -->
           <el-input type="text" placeholder="请输入验证码" v-model="register.verification" name="verification">
             <el-button slot="append" type="primary" :loading="isgettingLoading" @click="captcha()">{{
@@ -59,7 +59,7 @@
             }}</el-button>
           </el-input>
         </el-form-item>
-        <el-form-item prop="name" label="用户名">
+        <el-form-item prop="name" label="用户名" size="mini">
           <el-input
             type="text"
             placeholder="请输入用户名"
@@ -71,8 +71,8 @@
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
-        <el-button @click="isEditDialogVisible = false"> 取消 </el-button>
-        <el-button type="primary" :loading="isEditSubmitting" @click="create()"> 注册 </el-button>
+        <el-button size="mini" @click="isEditDialogVisible = false"> 取消 </el-button>
+        <el-button size="mini" type="primary" :loading="isEditSubmitting" @click="create()"> 注册 </el-button>
       </div>
     </el-dialog>
 
@@ -86,7 +86,7 @@
         class="demo-ruleForm"
         v-loading="isEditLoading2"
       >
-        <el-form-item prop="username" label="邮箱/手机号">
+        <el-form-item prop="username" label="邮箱/手机号" size="mini">
           <el-input
             maxlength="32"
             type="text"
@@ -96,7 +96,7 @@
             autofocus="autofocus"
           ></el-input>
         </el-form-item>
-        <el-form-item prop="verification" label="验证码">
+        <el-form-item prop="verification" label="验证码" size="mini">
           <el-input
             type="text"
             placeholder="请输入验证码"
@@ -108,7 +108,7 @@
             }}</el-button>
           </el-input>
         </el-form-item>
-        <el-form-item prop="newPassword" label="新密码">
+        <el-form-item prop="newPassword" label="新密码" size="mini">
           <el-input
             show-password
             name="newPassword"
@@ -119,8 +119,8 @@
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
-        <el-button @click="isEditDialogVisible2 = false"> 取消 </el-button>
-        <el-button type="primary" :loading="isEditSubmitting2" @click="changePassword()"> 确定 </el-button>
+        <el-button size="mini" @click="isEditDialogVisible2 = false"> 取消 </el-button>
+        <el-button size="mini" type="primary" :loading="isEditSubmitting2" @click="changePassword()"> 确定 </el-button>
       </div>
     </el-dialog>
   </div>
@@ -411,7 +411,7 @@ export default {
           let me = this
           // me.isDisabled = true
           let interval = window.setInterval(function () {
-            me.buttonName2 = '（' + me.time + '秒）后可重新发送'
+            me.buttonName2 = '（' + me.time2 + '秒）后可重新发送'
             --me.time2
             if (me.time2 < 0) {
               me.buttonName2 = '重新发送'
