@@ -1,7 +1,7 @@
 <template>
   <aside class="aside">
     <div class="new-button">
-      <el-button round size="small" icon="el-icon-plus">新建仓库</el-button>
+      <el-button round size="small" icon="el-icon-plus" @click="create">新建仓库</el-button>
     </div>
     <div class="repositories">
       <el-collapse :value="['1', '2']">
@@ -40,6 +40,25 @@
       </el-collapse>
       <router-link to="/repositories" class="repo-all">所有仓库</router-link>
     </div>
+    <el-dialog
+      :title="'创建仓库'"
+      :close-on-click-modal="false"
+      :append-to-body="true"
+      :visible.sync="isEditDialogVisible"
+    >
+      <el-form :model="repository" :rules="rules" ref="repository">
+        <el-form-item label="仓库名称" size="mini" prop="name">
+          <el-input v-model="repository.name" maxlength="32" show-word-limit></el-input>
+        </el-form-item>
+        <el-form-item type="text" label="仓库描述" size="mini">
+          <el-input type="textarea" v-model="repository.desc" maxlength="128"></el-input>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button size="mini" @click="isEditDialogVisible = false">取 消</el-button>
+        <el-button size="mini" type="primary" @click="addrepository()">确 定</el-button>
+      </div>
+    </el-dialog>
   </aside>
 </template>
 
@@ -47,7 +66,29 @@
 // import { Header } from './components'
 
 export default {
-  name: 'Aside'
+  name: 'Aside',
+  data() {
+    return {
+      isEditDialogVisible: false,
+      repository: {
+        name: '',
+        desc: ''
+      },
+      rules: {
+        name: [{ required: true, message: '仓库名称不能为空', trigger: 'blur' }]
+      }
+    }
+  },
+  methods: {
+    create() {
+      this.verificationChange = {}
+      this.isEditDialogVisible = true
+      this.$nextTick(() => {
+        this.$refs.repository.clearValidate()
+      })
+    },
+    addrepository() {}
+  }
 }
 </script>
 
