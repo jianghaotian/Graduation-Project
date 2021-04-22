@@ -72,7 +72,7 @@ export default {
 
 <style scoped lang="scss">
 .repositories {
-  height: calc(100vh - 79px);
+  height: calc(100vh - 48px);
   width: calc(100vw - 220px);
   background: #ffffff;
   display: flex;
@@ -95,8 +95,7 @@ export default {
         border-radius: 3px;
         box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
         cursor: pointer;
-        margin-bottom: 20px;
-        margin-right: 20px;
+        margin: 0 20px 20px 0;
         &:hover {
           background-image: linear-gradient(#409eff, #ecf5ff);
           color: #1890ff;
