@@ -10,6 +10,7 @@ import '@/styles/index.scss'
 import App from './App.vue'
 import store from './store'
 import router from './router'
+import '@/assets/iconfont/iconfont.js'
 
 Vue.config.productionTip = false
 
