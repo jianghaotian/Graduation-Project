@@ -45,13 +45,14 @@
       :close-on-click-modal="false"
       :append-to-body="true"
       :visible.sync="isEditDialogVisible"
+      width="520px"
     >
       <el-form :model="repository" :rules="rules" ref="repository">
-        <el-form-item label="仓库名称" size="mini" prop="name">
+        <el-form-item label="仓库名称" size="mini" prop="name" label-width="100px">
           <el-input v-model="repository.name" maxlength="32" show-word-limit></el-input>
         </el-form-item>
-        <el-form-item type="text" label="仓库描述" size="mini">
-          <el-input type="textarea" v-model="repository.desc" maxlength="128"></el-input>
+        <el-form-item type="text" label="仓库描述" size="mini" label-width="100px">
+          <el-input type="textarea" v-model="repository.desc" maxlength="128" show-word-limit></el-input>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">

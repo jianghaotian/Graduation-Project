@@ -32,6 +32,11 @@ const routes = [
         name: 'Repository',
         component: () => import('@/views/repository')
       },
+      {
+        path: '/repository/:id/:folderId',
+        name: 'RepositoryFolder',
+        component: () => import('@/views/repository')
+      },
       // ----- 404 -----
       {
         path: '/404',
