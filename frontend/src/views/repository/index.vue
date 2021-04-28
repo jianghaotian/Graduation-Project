@@ -32,6 +32,8 @@
             ref="table"
             @row-click="onSelect"
             @selection-change="handleChange"
+            @cell-mouse-leave="showClickIcon = false"
+            @cell-mouse-enter="displayHandle"
             v-loading="isSearchLoading"
             :data="content"
             style="width: 100%"
@@ -49,6 +51,12 @@
                   v-model="scope.row.name"
                 ></el-input>
                 <span v-show="!scope.row.show">{{ scope.row.name }}</span>
+                <el-dropdown @command="createView" class="pointerIcon" trigger="click">
+                  <i v-show="showClickIcon == true && scope.row.id == rowid" class="el-icon-more"></i>
+                  <el-dropdown-menu slot="dropdown">
+                    <el-dropdown-item command="操作">操作</el-dropdown-item>
+                  </el-dropdown-menu>
+                </el-dropdown>
               </template>
             </el-table-column>
             <el-table-column min-width="2" prop="update_time" label="修改时间" />
@@ -65,16 +73,16 @@
         <el-tabs v-model="activeName" style="height: 100%">
           <el-tab-pane label="项目动态" name="MainFirst" style="height: 100%">
             <div class="dynamics">
-              <div v-for="item in operationsHistory" :key="item.id" class="box-card">
-                <!-- <el-card class="box-card">
-                  {{ '列表内容 ' + item }}
-                </el-card> -->
-                <el-avatar :size="32" src="https://empty">
-                  <img src="@/assets/images/default-user.png" />
-                </el-avatar>
-                <span class="name">{{ item.name }}</span>
-                <span class="operations">{{ item.operations }}</span>
-                <span class="time">{{ item.time }}</span>
+              <div v-for="time in operationsHistory" :key="time.id">
+                <span class="name">{{ time.time }}</span>
+                <div v-for="item in time.children" :key="item.id" class="box-card">
+                  <el-avatar :size="32" src="https://empty">
+                    <img src="@/assets/images/default-user.png" />
+                  </el-avatar>
+                  <span class="name">{{ item.name }}</span>
+                  <span class="operations">{{ item.operations }}</span>
+                  <span class="time">{{ item.time }}</span>
+                </div>
               </div>
             </div>
           </el-tab-pane>
@@ -102,13 +110,16 @@ export default {
       url: this.$route.params.id,
       isSearchLoading: false,
       content: [],
-      operationsHistory: []
+      operationsHistory: [],
+      showClickIcon: false,
+      showInfo: false,
+      rowid: '',
+      rowData: []
     }
   },
   watch: {
     $route: function () {
       this.url = this.$route.params.id
-      // console.log(from, to)
       this.initData()
     }
   },
@@ -131,9 +142,15 @@ export default {
           { id: 3, name: '3', update_time: '2021-03-25 20:04:02', update_person: 'nancy' }
         ]
         this.operationsHistory = [
-          { id: '1', operations: '添加了1.xlsx', name: 'nancy', time: '2021-04-25 20:01:02' },
-          { id: '2', operations: '添加了2.txt', name: 'nancy', time: '2021-04-25 20:02:02' },
-          { id: '3', operations: '添加了3', name: 'nancy', time: '2021-03-25 20:04:02' }
+          {
+            id: '1',
+            time: '2021-04-25',
+            children: [
+              { id: '1-1', operations: '添加了1.xlsx', name: 'nancy', time: '2021-04-25 20:01:02' },
+              { id: '1-2', operations: '添加了2.txt', name: 'nancy', time: '2021-04-25 20:02:02' },
+              { id: '1-3', operations: '添加了3', name: 'nancy', time: '2021-03-25 20:04:02' }
+            ]
+          }
         ]
       } else {
         this.content = [
@@ -149,9 +166,24 @@ export default {
           { id: 4, name: '4.ppt', update_time: '2021-04-25 20:04:02', update_person: 'nancy' }
         ]
         this.operationsHistory = [
-          { id: '4', operations: '添加了4.ppt', name: 'nancy', time: '2021-04-25 20:04:02' },
-          { id: '2', operations: '添加了2.mp3', name: 'nancy', time: '2021-04-25 20:02:02' },
-          { id: '3', operations: '添加了3.zip', name: 'nancy', time: '2021-04-25 20:03:02' }
+          {
+            id: '4',
+            time: '2021-04-25',
+            children: [
+              { id: '4-1', operations: '添加了4.ppt', name: 'nancy', time: '20:04:02' },
+              { id: '4-2', operations: '添加了2.mp3', name: 'nancy', time: '2021-04-25 20:02:02' },
+              { id: '4-3', operations: '添加了3.zip', name: 'nancy', time: '2021-04-25 20:03:02' }
+            ]
+          },
+          {
+            id: '3',
+            time: '2021-04-25',
+            children: [
+              { id: '3-1', operations: '添加了4.ppt', name: 'nancy', time: '20:04:02' },
+              { id: '3-2', operations: '添加了2.mp3', name: 'nancy', time: '2021-04-25 20:02:02' },
+              { id: '3-3', operations: '添加了3.zip', name: 'nancy', time: '2021-04-25 20:03:02' }
+            ]
+          }
         ]
       }
       for (let i = 0; i < this.content.length; i++) {
@@ -210,17 +242,26 @@ export default {
     handleChange(val) {
       console.log(val)
     },
+    displayHandle(row) {
+      this.showClickIcon = true
+      this.rowid = row.id //赋值行id，便于页面判断
+      this.rowData = row //把行数据赋值，用于后续操作
+    },
     createView(command) {
       console.log(command)
     },
     getNowDate() {
-      var date = new Date()
-      var year = date.getFullYear()
-      var month = date.getMonth() + 1
+      let date = new Date()
+      let year = date.getFullYear()
+      let month = date.getMonth() + 1
+      let day = date.getDate()
+      let hours = date.getHours() //获取当前小时数(0-23)
+      let minutes = date.getMinutes() //获取当前分钟数(0-59)
+      let seconds = date.getSeconds() //获取当前秒数(0-59)
       if (month.toString().length == 1) {
         month = '0' + month
       }
-      return year + '-' + month
+      return year + '-' + month + '-' + day + ' ' + hours + ':' + minutes + ':' + seconds
     },
     addFile() {
       this.content.unshift({
@@ -291,5 +332,10 @@ export default {
 }
 .el-input {
   width: 80%;
+}
+.pointerIcon {
+  transform: rotate(90deg);
+  float: right;
+  line-height: 28px;
 }
 </style>
