@@ -26,7 +26,7 @@
           <el-button size="mini" icon="el-icon-download" style="margin-left: 10px">下载</el-button>
           <el-button size="mini" icon="el-icon-delete" style="margin-left: 10px">删除</el-button>
         </el-row>
-        <el-row style="padding: 10px">全部文件({{ content.length }})</el-row>
+        <el-row style="padding: 10px" v-if="this.$route.params.id">全部文件({{ content.length }})</el-row>
         <div>
           <el-table
             ref="table"
@@ -74,7 +74,9 @@
           <el-tab-pane label="项目动态" name="MainFirst" style="height: 100%">
             <div class="dynamics">
               <div v-for="time in operationsHistory" :key="time.id">
-                <span class="name">{{ time.time }}</span>
+                <div class="date">
+                  <span><i class="el-icon-date"></i> {{ time.time }}</span>
+                </div>
                 <div v-for="item in time.children" :key="item.id" class="box-card">
                   <el-avatar :size="32" src="https://empty">
                     <img src="@/assets/images/default-user.png" />
@@ -146,9 +148,9 @@ export default {
             id: '1',
             time: '2021-04-25',
             children: [
-              { id: '1-1', operations: '添加了1.xlsx', name: 'nancy', time: '2021-04-25 20:01:02' },
-              { id: '1-2', operations: '添加了2.txt', name: 'nancy', time: '2021-04-25 20:02:02' },
-              { id: '1-3', operations: '添加了3', name: 'nancy', time: '2021-03-25 20:04:02' }
+              { id: '1-1', operations: '添加了1.xlsx', name: 'nancy', time: '20:01:02' },
+              { id: '1-2', operations: '添加了2.txt', name: 'nancy', time: '20:02:02' },
+              { id: '1-3', operations: '添加了3', name: 'nancy', time: '20:04:02' }
             ]
           }
         ]
@@ -171,8 +173,8 @@ export default {
             time: '2021-04-25',
             children: [
               { id: '4-1', operations: '添加了4.ppt', name: 'nancy', time: '20:04:02' },
-              { id: '4-2', operations: '添加了2.mp3', name: 'nancy', time: '2021-04-25 20:02:02' },
-              { id: '4-3', operations: '添加了3.zip', name: 'nancy', time: '2021-04-25 20:03:02' }
+              { id: '4-2', operations: '添加了2.mp3', name: 'nancy', time: '20:02:02' },
+              { id: '4-3', operations: '添加了3.zip', name: 'nancy', time: '20:03:02' }
             ]
           },
           {
@@ -180,8 +182,8 @@ export default {
             time: '2021-04-25',
             children: [
               { id: '3-1', operations: '添加了4.ppt', name: 'nancy', time: '20:04:02' },
-              { id: '3-2', operations: '添加了2.mp3', name: 'nancy', time: '2021-04-25 20:02:02' },
-              { id: '3-3', operations: '添加了3.zip', name: 'nancy', time: '2021-04-25 20:03:02' }
+              { id: '3-2', operations: '添加了2.mp3', name: 'nancy', time: '20:02:02' },
+              { id: '3-3', operations: '添加了3.zip', name: 'nancy', time: '20:03:02' }
             ]
           }
         ]
@@ -301,6 +303,11 @@ export default {
       padding: 10px 20px 0;
       background-color: #f7f7fa;
       overflow-y: auto;
+      .date {
+        width: 100%;
+        display: flex;
+        justify-content: center;
+      }
       .box-card {
         width: 100%;
         position: relative;
@@ -308,17 +315,17 @@ export default {
         margin-bottom: 10px;
         .name {
           position: absolute;
-          top: 0;
+          top: 5px;
           left: 40px;
         }
         .operations {
           position: absolute;
-          top: 20px;
-          left: 40px;
+          top: 5px;
+          left: 80px;
         }
         .time {
           position: absolute;
-          top: 0;
+          top: 5px;
           right: 0;
         }
       }

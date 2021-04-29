@@ -2,6 +2,22 @@
   <div class="repositories">
     <div class="allin">
       <div class="allProject">
+        <p>我创建的仓库</p>
+        <div class="project" v-for="nav in navList" :key="'nav' + nav.path">
+          <router-link class="link" :to="nav.path">
+            <p class="title">{{ nav.title }}</p>
+            <p class="desc"></p>
+            <p class="remark">
+              <span>
+                由"
+                <i>{{ nav.name }}</i>
+                "创建
+              </span>
+              <span>{{ nav.date }}</span>
+            </p>
+          </router-link>
+        </div>
+        <p>我加入的仓库</p>
         <div class="project" v-for="nav in navList" :key="'nav' + nav.path">
           <router-link class="link" :to="nav.path">
             <p class="title">{{ nav.title }}</p>

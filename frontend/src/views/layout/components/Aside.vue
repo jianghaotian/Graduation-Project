@@ -5,7 +5,7 @@
     </div>
     <div class="repositories">
       <el-collapse :value="['1', '2']">
-        <el-collapse-item title="我的仓库" name="1">
+        <el-collapse-item title="我创建的仓库" name="1">
           <div class="repo-list">
             <router-link to="/" class="item">
               <i class="el-icon-folder"></i>
@@ -49,7 +49,7 @@
     >
       <el-form :model="repository" :rules="rules" ref="repository">
         <el-form-item label="仓库名称" size="mini" prop="name" label-width="100px">
-          <el-input v-model="repository.name" maxlength="32" show-word-limit></el-input>
+          <el-input v-model="repository.name" maxlength="20" show-word-limit style="width: 100%"></el-input>
         </el-form-item>
         <el-form-item type="text" label="仓库描述" size="mini" label-width="100px">
           <el-input type="textarea" v-model="repository.desc" maxlength="128" show-word-limit></el-input>
