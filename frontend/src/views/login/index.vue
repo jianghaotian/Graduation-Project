@@ -47,6 +47,9 @@ export default {
     border-radius: 10px;
     margin: auto;
     background: #fff;
+    .el-tabs__content {
+      padding-top: 22px;
+    }
   }
 }
 </style>

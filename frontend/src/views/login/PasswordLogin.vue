@@ -127,7 +127,7 @@
 </template>
 
 <script>
-// import loginApi from '@/api/user'
+import api from '@/api/account'
 export default {
   data() {
     let checkPwd = (rule, value, callback) => {
@@ -290,26 +290,26 @@ export default {
     pLogin() {
       this.$refs.passwordLogin.validate((valid) => {
         if (valid) {
-          // this.isLogining = true
+          this.isLogining = true
           let content = {}
           content.username = this.passwordLogin.username
           content.type = this.userNameType(this.passwordLogin.username)
           content.password = this.passwordLogin.password
-          content = JSON.stringify(content)
-          this.$router.push('/')
-          // loginApi
-          //   .login(content)
-          //   .then((response) => {
-          //     console.log(response)
-          //     if (response.data.code === 0) {
-          //       this.$message({ message: '登录成功。', type: 'success' })
-          //     } else {
-          //       this.$message({ message: '登录失败。', type: 'error' })
-          //     }
-          //     this.isLogining = false
-          //   })
-          //   .catch(() => {})
-          //   .then(() => {})
+          api
+            .login(content)
+            .then((response) => {
+              console.log(response)
+              if (response.data.code === 0) {
+                this.$message({ message: '登录成功。', type: 'success' })
+                this.$router.push('/')
+              } else {
+                this.$message({ message: '登录失败。', type: 'error' })
+              }
+            })
+            .catch(() => {})
+            .finally(() => {
+              this.isLogining = false
+            })
         }
       })
     },
