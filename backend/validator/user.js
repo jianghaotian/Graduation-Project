@@ -3,7 +3,7 @@
  */
 const Joi = require('joi');
 const {
-  username, verification, name, email, phone,
+  username, verification, name, email, phone, any,
 } = require('./common');
 
 /**
@@ -25,7 +25,7 @@ const changePhoneSchema = Joi.object({
 /**
  * 获取用户基本信息
  */
-const getInfoSchema = Joi.any();
+const getInfoSchema = any;
 
 /**
  * 修改用户基本信息
@@ -37,7 +37,7 @@ const changeInfoSchema = Joi.object({
 /**
  * 修改用户头像
  */
-const changeHeadSchema = Joi.any();
+const changeHeadSchema = any;
 
 /**
  * 搜索用户

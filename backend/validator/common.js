@@ -5,6 +5,7 @@ const Joi = require('joi');
 const { veriLen, pwdLen } = require('../config');
 
 const common = {
+  // --- 用户信息 --- //
   // 邮箱/手机号
   username: Joi.string().trim().required(),
   // 密码
@@ -21,8 +22,13 @@ const common = {
   // 手机号
   phone: Joi.string().trim().pattern(/^1[0-9]{10}$/, 'phone').required(),
 
+  // --- 仓库信息 --- //
+  repoName: Joi.string().trim().max(32).required(),
+  repoId: Joi.string().uuid(),
+  // --- 通用 --- //
   // 字符串
   string: Joi.string(),
+  any: Joi.any(),
 };
 
 module.exports = common;

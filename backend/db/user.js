@@ -72,7 +72,7 @@ const queryUserIdByPwd = async ({ username, password, type }) => {
  * 通过用户id获取用户信息
  */
 const queryUserById = async ({ id }) => {
-  const sql = `SELECT * FROM xy.user WHERE ${id} = $1`;
+  const sql = 'SELECT * FROM xy.user WHERE id = $1';
   const row = await runSql(sql, [id]);
   return row;
 };
