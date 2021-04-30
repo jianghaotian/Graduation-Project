@@ -3,7 +3,7 @@
  */
 const Joi = require('joi');
 const {
-  repoName, repoId, any,
+  repoName, repoId, repoType, any,
 } = require('./common');
 
 /**
@@ -46,28 +46,33 @@ const changeInfoSchema = Joi.object({
  * 获取仓库成员列表
  */
 const getMemberSchema = Joi.object({
-
+  id: repoId,
 });
 
 /**
  * 添加成员
  */
 const addMemberSchema = Joi.object({
-
+  repo_id: repoId,
+  user_id: any,
+  type: repoType
 });
 
 /**
  * 删除成员
  */
 const delMemberSchema = Joi.object({
-
+  repo_id: repoId,
+  user_id: any,
 });
 
 /**
  * 修改成员权限
  */
 const changeTypeSchema = Joi.object({
-
+  repo_id: repoId,
+  user_id: any,
+  type: repoType
 });
 
 module.exports = {

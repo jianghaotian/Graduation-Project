@@ -11,12 +11,18 @@ const {
 const {
   insertPerm,
   deleteRepoById,
+  deletePerm,
+  updatePerm,
+  queryUserIdByRepo,
   queryOwnRepoIdByUser,
   queryOtherRepoIdByUser,
   queryOwnRepoIdByUser10,
   queryOtherRepoIdByUser10,
   queryRepoType,
 } = require('../db/permission');
+const {
+  queryUserById
+} = require('../db/user')
 const { getUuid } = require('../utils/uuid');
 
 /**
@@ -91,29 +97,42 @@ const changeInfo = async ({ id, name, desc }) => {
 /**
  * 获取仓库成员列表
  */
-const getMember = async (data) => {
-  console.log(data);
+const getMember = async ({ id }) => {
+  const userIdList = await queryUserIdByRepo({ repoId: id });
+  const promiseList = [];
+  for (let i = 0; i < userIdList.length; i += 1) {
+    promiseList.push(new Promise((resolve, reject) => {
+      queryUserById({ id: userIdList[i].user_id }).then((res) => {
+        resolve({id: res[0].id, name: res[0].name, head_thumb: res[0].head_thumb, type: userIdList[i].type});
+      }).catch(reject);
+    }));
+  }
+  const data = await Promise.all(promiseList);
+  return { error: false, data };
 };
 
 /**
  * 添加成员
  */
-const addMember = async (data) => {
-  console.log(data);
+const addMember = async ({repo_id, user_id, type}) => {
+  await insertPerm({repoId: repo_id, userId: user_id, type});
+  return { error: false };
 };
 
 /**
  * 删除成员
  */
-const delMember = async (data) => {
-  console.log(data);
+const delMember = async ({repo_id, user_id}) => {
+  await deletePerm({repoId: repo_id, userId: user_id});
+  return { error: false };
 };
 
 /**
  * 修改成员权限
  */
-const changeType = async (data) => {
-  console.log(data);
+const changeType = async ({repo_id, user_id, type}) => {
+  await updatePerm({repoId: repo_id, userId: user_id, type});
+  return { error: false };
 };
 
 module.exports = {

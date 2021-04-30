@@ -13,11 +13,38 @@ const insertPerm = async ({ repoId, userId, type }) => {
 };
 
 /** DELETE
- * 通过邮箱/手机号、验证码删除记录
+ * 通过仓库id删除记录
  */
 const deleteRepoById = async ({ id }) => {
   const sql = 'DELETE FROM xy.permission WHERE repository_id = $1';
   const row = await runSql(sql, [id]);
+  return row;
+};
+
+/** DELETE
+ * 通过仓库id、用户id删除记录
+ */
+const deletePerm = async ({ repoId, userId }) => {
+  const sql = 'DELETE FROM xy.permission WHERE repository_id = $1 and user_id = $2';
+  const row = await runSql(sql, [repoId, userId]);
+  return row;
+};
+
+/** UPDATE
+ * 通过仓库id、用户id修改记录
+ */
+ const updatePerm = async ({ repoId, userId, type }) => {
+  const sql = 'UPDATE xy.permission SET type = $1 WHERE repository_id = $2 and user_id = $3';
+  const row = await runSql(sql, [type, repoId, userId]);
+  return row;
+};
+
+/** SELECT
+ * 查询仓库成员
+ */
+ const queryUserIdByRepo = async ({ repoId }) => {
+  const sql = 'SELECT user_id, type FROM xy.permission WHERE repository_id = $1 order by type';
+  const row = await runSql(sql, [repoId]);
   return row;
 };
 
@@ -69,6 +96,9 @@ const queryRepoType = async ({ userId, repoId }) => {
 module.exports = {
   insertPerm,
   deleteRepoById,
+  deletePerm,
+  updatePerm,
+  queryUserIdByRepo,
   queryOwnRepoIdByUser,
   queryOtherRepoIdByUser,
   queryOwnRepoIdByUser10,

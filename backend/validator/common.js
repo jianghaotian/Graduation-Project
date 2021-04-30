@@ -23,8 +23,12 @@ const common = {
   phone: Joi.string().trim().pattern(/^1[0-9]{10}$/, 'phone').required(),
 
   // --- 仓库信息 --- //
+  // 仓库名
   repoName: Joi.string().trim().max(32).required(),
+  // 仓库id
   repoId: Joi.string().uuid(),
+  // 权限类型
+  repoType: Joi.number().valid(0, 1, 2, 3).required(),
   // --- 通用 --- //
   // 字符串
   string: Joi.string(),
