@@ -38,7 +38,6 @@ app.use(logger());
 app.use(koaBody({
   multipart: true,
   formidable: {
-    maxFieldsSize: 5 * 1024 * 1024,
     onFileBegin: (name, file) => {
       // console.log(`name: ${name}`);
       // console.log(file);

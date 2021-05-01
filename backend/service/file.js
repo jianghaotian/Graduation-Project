@@ -3,12 +3,14 @@
  */
 const {
   insertFile,
+  updateDeleteById,
+  updateNameById,
   queryFileList,
 } = require('../db/file');
 const {
   queryUserById,
 } = require('../db/user');
-const { getNilUuid } = require('../utils/uuid');
+const { getUuid, getNilUuid } = require('../utils/uuid');
 
 /**
  * 获取文件列表
@@ -56,7 +58,43 @@ const uploadFile = async ({ repo_id, folder_id }, id, files) => {
   return { error: false };
 };
 
+/**
+ * 新建文件夹
+ */
+const newFolder = async ({ repo_id, folder_id, name }, id) => {
+  const folderId = folder_id || getNilUuid();
+  await insertFile({
+    uid: getUuid(),
+    name,
+    type: 'folder',
+    size: 0,
+    id,
+    repoId: repo_id,
+    folderId,
+  });
+  return { error: false };
+};
+
+/**
+ * 文件重命名
+ */
+const renameFile = async ({ id, name }, userId) => {
+  await updateNameById({ name, id, userId });
+  return { error: false };
+};
+
+/**
+ * 删除文件
+ */
+const deleteFile = async ({ id }) => {
+  await updateDeleteById({ id });
+  return { error: false };
+};
+
 module.exports = {
   getList,
   uploadFile,
+  newFolder,
+  renameFile,
+  deleteFile,
 };

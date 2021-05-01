@@ -3,7 +3,7 @@
  */
 const Joi = require('joi');
 const {
-  repoId, any,
+  repoId, any, string,
 } = require('./common');
 
 /**
@@ -19,7 +19,34 @@ const getListSchema = Joi.object({
  */
 const uploadSchema = any;
 
+/**
+ * 新建文件夹
+ */
+const newFolderSchema = Joi.object({
+  repo_id: repoId,
+  folder_id: repoId,
+  name: string,
+});
+
+/**
+ * 文件重命名
+ */
+const renameFileSchema = Joi.object({
+  id: any,
+  name: string,
+});
+
+/**
+ * 删除文件
+ */
+const deleteFileSchema = Joi.object({
+  id: any,
+});
+
 module.exports = {
   getListSchema,
   uploadSchema,
+  newFolderSchema,
+  renameFileSchema,
+  deleteFileSchema,
 };

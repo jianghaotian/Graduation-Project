@@ -7,10 +7,16 @@ const genRouter = require('../utils/router');
 const {
   getListSchema,
   uploadSchema,
+  newFolderSchema,
+  renameFileSchema,
+  deleteFileSchema,
 } = require('../validator/file');
 const {
   getList,
   uploadFile,
+  newFolder,
+  renameFile,
+  deleteFile,
 } = require('../service/file');
 
 router.prefix(`${baseURL}/file`);
@@ -37,6 +43,42 @@ router.post('/upload', async (ctx) => {
     data: ctx.request.body,
     files: ctx.request.files,
     service: uploadFile,
+  });
+});
+
+/**
+ * 上传文件
+ */
+router.post('/new/folder', async (ctx) => {
+  await genRouter({
+    ctx,
+    schema: newFolderSchema,
+    data: ctx.request.body,
+    service: newFolder,
+  });
+});
+
+/**
+ * 文件重命名
+ */
+router.post('/rename', async (ctx) => {
+  await genRouter({
+    ctx,
+    schema: renameFileSchema,
+    data: ctx.request.body,
+    service: renameFile,
+  });
+});
+
+/**
+ * 删除文件
+ */
+router.post('/delete', async (ctx) => {
+  await genRouter({
+    ctx,
+    schema: deleteFileSchema,
+    data: ctx.request.body,
+    service: deleteFile,
   });
 });
 
