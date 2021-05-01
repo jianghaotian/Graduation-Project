@@ -10,7 +10,7 @@ const config = {
   // 监听端口
   port: 3000,
   // 路由根路径
-  baseURL: '/api/v1',
+  baseURL: '/v1',
   // 验证码长度
   veriLen: 6,
   // 验证码失效时间（单位：分钟）
