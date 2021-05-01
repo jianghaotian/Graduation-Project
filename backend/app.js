@@ -43,12 +43,21 @@ app.use(koaBody({
       // console.log(file);
       const uuid = getUuid();
       // eslint-disable-next-line no-param-reassign
-      file.path = `${path.join(__dirname, 'files')}/${uuid}`;
+      file.path = path.join(__dirname, 'files', uuid);
       // eslint-disable-next-line no-param-reassign
       file.uuid = uuid;
     },
   },
 }));
+
+// 将query重的token添加到header
+app.use(async (ctx, next) => {
+  const params = { ...ctx.request.query, ...ctx.request.body };
+  if (params.jwtToken) {
+    ctx.request.header.authorization = `Bearer ${params.jwtToken}`;
+  }
+  await next();
+});
 
 // koaJwt 忽略的url 正则表达式
 const jwtUnlessReg = new RegExp(`^${baseURL}/account`);

@@ -42,9 +42,19 @@ const queryFileList = async ({ repoId, folderId }) => {
   return row;
 };
 
+/** SELECT
+ * 查询文件列表
+ */
+const queryFileByUid = async ({ uid }) => {
+  const sql = 'SELECT * FROM xy.file WHERE uid = $1';
+  const row = await runSql(sql, [uid]);
+  return row;
+};
+
 module.exports = {
   insertFile,
   updateDeleteById,
   updateNameById,
   queryFileList,
+  queryFileByUid,
 };

@@ -17,6 +17,7 @@ const {
   newFolder,
   renameFile,
   deleteFile,
+  downloadFile,
 } = require('../service/file');
 
 router.prefix(`${baseURL}/file`);
@@ -80,6 +81,13 @@ router.post('/delete', async (ctx) => {
     data: ctx.request.body,
     service: deleteFile,
   });
+});
+
+/**
+ * 下载文件
+ */
+router.get('/download/:uid', async (ctx) => {
+  await downloadFile(ctx.params, ctx.state.jwt?.id, ctx);
 });
 
 module.exports = router;

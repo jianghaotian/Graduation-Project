@@ -1,11 +1,14 @@
 /**
  * 服务 - 文件
  */
+const path = require('path');
+const fs = require('fs');
 const {
   insertFile,
   updateDeleteById,
   updateNameById,
   queryFileList,
+  queryFileByUid,
 } = require('../db/file');
 const {
   queryUserById,
@@ -91,10 +94,22 @@ const deleteFile = async ({ id }) => {
   return { error: false };
 };
 
+/**
+ * 下载文件
+ */
+const downloadFile = async ({ uid }, userId, ctx) => {
+  const file = await queryFileByUid({ uid });
+  const filePath = path.join(__dirname, '../files', uid);
+  const stream = fs.createReadStream(filePath);
+  ctx.set('Content-disposition', `attachment;filename=${file[0].name}`);
+  ctx.body = stream;
+};
+
 module.exports = {
   getList,
   uploadFile,
   newFolder,
   renameFile,
   deleteFile,
+  downloadFile,
 };
