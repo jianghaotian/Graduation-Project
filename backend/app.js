@@ -1,7 +1,9 @@
 const Koa = require('koa');
 const logger = require('koa-logger');
-const bodyparser = require('koa-bodyparser');
+const koaBody = require('koa-body');
 const koaJwt = require('koa-jwt');
+const path = require('path');
+const { getUuid } = require('./utils/uuid');
 const { baseURL, jwtConfig: { jwtSecret } } = require('./config');
 const res = require('./utils/res');
 
@@ -33,7 +35,21 @@ app.use(async (ctx, next) => {
 
 // 中间件
 app.use(logger());
-app.use(bodyparser({ enableTypes: ['json', 'form', 'text'] }));
+app.use(koaBody({
+  multipart: true,
+  formidable: {
+    maxFieldsSize: 5 * 1024 * 1024,
+    onFileBegin: (name, file) => {
+      // console.log(`name: ${name}`);
+      // console.log(file);
+      const uuid = getUuid();
+      // eslint-disable-next-line no-param-reassign
+      file.path = `${path.join(__dirname, 'files')}/${uuid}`;
+      // eslint-disable-next-line no-param-reassign
+      file.uuid = uuid;
+    },
+  },
+}));
 
 // koaJwt 忽略的url 正则表达式
 const jwtUnlessReg = new RegExp(`^${baseURL}/account`);
@@ -43,11 +59,13 @@ app.use(koaJwt({ secret: jwtSecret, key: 'jwt' }).unless({ path: [jwtUnlessReg] 
 const accountRoute = require('./routes/account');
 const userRoute = require('./routes/user');
 const repositoryRoute = require('./routes/repository');
+const fileRoute = require('./routes/file');
 
 // 配置路由
 app.use(accountRoute.routes(), accountRoute.allowedMethods());
 app.use(userRoute.routes(), userRoute.allowedMethods());
 app.use(repositoryRoute.routes(), repositoryRoute.allowedMethods());
+app.use(fileRoute.routes(), fileRoute.allowedMethods());
 
 // 应用程序初始化完成
 // eslint-disable-next-line no-console

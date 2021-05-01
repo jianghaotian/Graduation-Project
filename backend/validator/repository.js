@@ -55,7 +55,7 @@ const getMemberSchema = Joi.object({
 const addMemberSchema = Joi.object({
   repo_id: repoId,
   user_id: any,
-  type: repoType
+  type: repoType,
 });
 
 /**
@@ -72,7 +72,7 @@ const delMemberSchema = Joi.object({
 const changeTypeSchema = Joi.object({
   repo_id: repoId,
   user_id: any,
-  type: repoType
+  type: repoType,
 });
 
 module.exports = {

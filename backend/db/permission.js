@@ -33,7 +33,7 @@ const deletePerm = async ({ repoId, userId }) => {
 /** UPDATE
  * 通过仓库id、用户id修改记录
  */
- const updatePerm = async ({ repoId, userId, type }) => {
+const updatePerm = async ({ repoId, userId, type }) => {
   const sql = 'UPDATE xy.permission SET type = $1 WHERE repository_id = $2 and user_id = $3';
   const row = await runSql(sql, [type, repoId, userId]);
   return row;
@@ -42,7 +42,7 @@ const deletePerm = async ({ repoId, userId }) => {
 /** SELECT
  * 查询仓库成员
  */
- const queryUserIdByRepo = async ({ repoId }) => {
+const queryUserIdByRepo = async ({ repoId }) => {
   const sql = 'SELECT user_id, type FROM xy.permission WHERE repository_id = $1 order by type';
   const row = await runSql(sql, [repoId]);
   return row;

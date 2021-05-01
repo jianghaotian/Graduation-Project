@@ -21,8 +21,8 @@ const {
   queryRepoType,
 } = require('../db/permission');
 const {
-  queryUserById
-} = require('../db/user')
+  queryUserById,
+} = require('../db/user');
 const { getUuid } = require('../utils/uuid');
 
 /**
@@ -103,7 +103,9 @@ const getMember = async ({ id }) => {
   for (let i = 0; i < userIdList.length; i += 1) {
     promiseList.push(new Promise((resolve, reject) => {
       queryUserById({ id: userIdList[i].user_id }).then((res) => {
-        resolve({id: res[0].id, name: res[0].name, head_thumb: res[0].head_thumb, type: userIdList[i].type});
+        resolve({
+          id: res[0].id, name: res[0].name, head_thumb: res[0].head_thumb, type: userIdList[i].type,
+        });
       }).catch(reject);
     }));
   }
@@ -114,24 +116,24 @@ const getMember = async ({ id }) => {
 /**
  * 添加成员
  */
-const addMember = async ({repo_id, user_id, type}) => {
-  await insertPerm({repoId: repo_id, userId: user_id, type});
+const addMember = async ({ repo_id, user_id, type }) => {
+  await insertPerm({ repoId: repo_id, userId: user_id, type });
   return { error: false };
 };
 
 /**
  * 删除成员
  */
-const delMember = async ({repo_id, user_id}) => {
-  await deletePerm({repoId: repo_id, userId: user_id});
+const delMember = async ({ repo_id, user_id }) => {
+  await deletePerm({ repoId: repo_id, userId: user_id });
   return { error: false };
 };
 
 /**
  * 修改成员权限
  */
-const changeType = async ({repo_id, user_id, type}) => {
-  await updatePerm({repoId: repo_id, userId: user_id, type});
+const changeType = async ({ repo_id, user_id, type }) => {
+  await updatePerm({ repoId: repo_id, userId: user_id, type });
   return { error: false };
 };
 
