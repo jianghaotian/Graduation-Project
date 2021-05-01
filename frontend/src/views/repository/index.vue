@@ -26,7 +26,12 @@
           <el-button size="mini" icon="el-icon-download" style="margin-left: 10px">下载</el-button>
           <el-button size="mini" icon="el-icon-delete" style="margin-left: 10px">删除</el-button>
         </el-row>
-        <el-row style="padding: 10px" v-if="this.$route.params.id">全部文件({{ content.length }})</el-row>
+        <el-row style="padding: 10px" v-if="this.$route.params.folderId">
+          <a><i class="el-icon-back"></i> 返回上一级</a>
+          >
+          <span>4</span>
+        </el-row>
+        <el-row style="padding: 10px" v-else>全部文件({{ content.length }})</el-row>
         <div>
           <el-table
             ref="table"
@@ -54,7 +59,9 @@
                 <el-dropdown @command="createView" class="pointerIcon" trigger="click">
                   <i v-show="showClickIcon == true && scope.row.id == rowid" class="el-icon-more"></i>
                   <el-dropdown-menu slot="dropdown">
-                    <el-dropdown-item command="操作">操作</el-dropdown-item>
+                    <el-dropdown-item command="删除">删除</el-dropdown-item>
+                    <el-dropdown-item command="移动">移动</el-dropdown-item>
+                    <el-dropdown-item command="重命名">重命名</el-dropdown-item>
                   </el-dropdown-menu>
                 </el-dropdown>
               </template>
@@ -70,7 +77,7 @@
         </div>
       </el-main>
       <el-aside class="rightTab" width="290px">
-        <el-tabs v-model="activeName" style="height: 100%">
+        <el-tabs v-model="activeName" style="height: 100%" @tab-click="handleClick">
           <el-tab-pane label="项目动态" name="MainFirst" style="height: 100%">
             <div class="dynamics">
               <div v-for="time in operationsHistory" :key="time.id">
@@ -88,11 +95,43 @@
               </div>
             </div>
           </el-tab-pane>
-          <el-tab-pane label="项目成员" name="MainSecond">
-            <div class="members">项目成员</div>
+          <el-tab-pane label="项目成员" name="MainSecond" style="height: 100%">
+            <div class="members">
+              <el-row>邀请成员加入</el-row>
+              <el-row style="margin: 10px 0">
+                <el-input placeholder="请输入用户id" size="mini" style="width: 170px; margin-right: 5px"></el-input>
+                <el-button @click="addMember" type="primary" size="mini"> 添加 </el-button>
+              </el-row>
+              <el-row style="padding-bottom: 10px">成员列表({{ members.length }})</el-row>
+              <div v-for="item in members" :key="item.id" class="card">
+                <el-avatar :size="32" src="https://empty">
+                  <img src="@/assets/images/default-user.png" />
+                </el-avatar>
+                <span class="memberName">{{ item.name }}</span>
+                <el-row class="status">
+                  <span v-show="item.name == 'nancy'" class="my">本人</span>
+                  <span v-if="item.type == 0">创建者</span>
+                  <span v-else-if="item.type == 1">管理员</span>
+                  <span v-else>成员</span>
+                </el-row>
+              </div>
+            </div>
           </el-tab-pane>
-          <el-tab-pane label="项目设置" name="MainThird">
-            <div class="setup">项目设置</div>
+          <el-tab-pane label="项目信息" name="MainThird" style="height: 100%">
+            <div class="message">
+              <el-row>项目名称</el-row>
+              <el-row style="margin: 10px 0">
+                <!-- <el-input placeholder="请输入用户id" size="mini" style="width: 180px; margin-right: 10px"></el-input> -->
+                <el-input maxlength="20" show-word-limit size="mini"></el-input>
+              </el-row>
+              <el-row>项目描述</el-row>
+              <el-row style="margin: 10px 0">
+                <el-input type="textarea" maxlength="128" show-word-limit></el-input>
+              </el-row>
+              <el-row>
+                <el-button @click="addMember" type="primary" class="addSave" size="mini"> 保存</el-button>
+              </el-row>
+            </div>
           </el-tab-pane>
         </el-tabs>
       </el-aside>
@@ -116,7 +155,8 @@ export default {
       showClickIcon: false,
       showInfo: false,
       rowid: '',
-      rowData: []
+      rowData: [],
+      members: []
     }
   },
   watch: {
@@ -278,7 +318,19 @@ export default {
     save(row) {
       row.show = false
       row.icon = this.fileType(row.name)
-    }
+    },
+    handleClick(targetName) {
+      console.log(targetName.index)
+      if (targetName.index == 1) {
+        this.members = [
+          { id: '1', name: 'nancy', head_thumb: 'pic', type: 0 },
+          { id: '2', name: 'mary', head_thumb: 'pic', type: 1 },
+          { id: '3', name: 'mike', head_thumb: 'pic', type: 2 },
+          { id: '4', name: 'jane', head_thumb: 'pic', type: 3 }
+        ]
+      }
+    },
+    addMember() {}
   }
 }
 </script>
@@ -328,6 +380,45 @@ export default {
           top: 5px;
           right: 0;
         }
+      }
+    }
+    .members {
+      width: 100%;
+      height: 100%;
+      padding: 10px 20px 0;
+      overflow-y: auto;
+      .card {
+        width: 100%;
+        position: relative;
+        font-size: 12px;
+        margin-bottom: 10px;
+        .memberName {
+          position: absolute;
+          top: 3px;
+          left: 40px;
+        }
+        .status {
+          position: absolute;
+          top: 20px;
+          left: 40px;
+          color: #999;
+          .my {
+            background-color: #409eff;
+            color: #fff;
+            display: inline-block;
+            padding: 1px 5px;
+            margin-right: 5px;
+          }
+        }
+      }
+    }
+    .message {
+      width: 100%;
+      height: 100%;
+      padding: 10px 20px 0;
+      overflow-y: auto;
+      .addSave {
+        width: 100%;
       }
     }
   }
