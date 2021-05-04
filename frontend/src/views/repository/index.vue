@@ -20,7 +20,19 @@
             ></el-button>
             <el-dropdown-menu slot="dropdown">
               <el-dropdown-item command="文件夹">文件夹</el-dropdown-item>
-              <el-dropdown-item command="文件">文件</el-dropdown-item>
+              <el-dropdown-item command="文件">
+                <el-upload
+                  class="upload-demo"
+                  action=""
+                  :on-success="handlesuccess"
+                  multiple
+                  :limit="3"
+                  :on-exceed="handleExceed"
+                  :file-list="fileList"
+                >
+                  文件
+                </el-upload>
+              </el-dropdown-item>
             </el-dropdown-menu>
           </el-dropdown>
           <el-button size="mini" icon="el-icon-download" style="margin-left: 10px">下载</el-button>
@@ -156,7 +168,8 @@ export default {
       showInfo: false,
       rowid: '',
       rowData: [],
-      members: []
+      members: [],
+      fileList: []
     }
   },
   watch: {
@@ -330,7 +343,20 @@ export default {
         ]
       }
     },
-    addMember() {}
+    addMember() {},
+    handleExceed(files, fileList) {
+      this.$message.warning(
+        `当前限制选择 3 个文件，本次选择了 ${files.length} 个文件，共选择了 ${files.length + fileList.length} 个文件`
+      )
+    },
+    handlesuccess(response) {
+      //response即为后台返回的全部内容
+      if (response.success === 1) {
+        console.log('解析成功')
+      } else {
+        console.log('解析失败')
+      }
+    }
   }
 }
 </script>
