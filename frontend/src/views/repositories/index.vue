@@ -2,33 +2,33 @@
   <div class="repositories">
     <div class="allin">
       <div class="allProject">
-        <p>我创建的仓库</p>
-        <div class="project" v-for="nav in navList" :key="'nav' + nav.path">
-          <router-link class="link" :to="nav.path">
-            <p class="title">{{ nav.title }}</p>
+        <p class="allProject-title">我创建的仓库</p>
+        <div class="project" v-for="nav in ownList" :key="'nav' + nav.id">
+          <router-link class="link" :to="'/repository/' + nav.id">
+            <p class="title">{{ nav.name }}</p>
             <p class="desc"></p>
             <p class="remark">
               <span>
-                由"
-                <i>{{ nav.name }}</i>
-                "创建
+                <!-- 由"
+                <i>{{ nav.user }}</i>
+                "创建 -->
               </span>
-              <span>{{ nav.date }}</span>
+              <span>{{ nav.create_time }}</span>
             </p>
           </router-link>
         </div>
-        <p>我加入的仓库</p>
-        <div class="project" v-for="nav in navList" :key="'nav' + nav.path">
-          <router-link class="link" :to="nav.path">
+        <p class="allProject-title">加入的仓库</p>
+        <div class="project" v-for="nav in otherList" :key="'nav' + nav.id">
+          <router-link class="link" :to="'/repository/' + nav.id">
             <p class="title">{{ nav.title }}</p>
             <p class="desc"></p>
             <p class="remark">
               <span>
-                由"
-                <i>{{ nav.name }}</i>
-                "创建
+                <!-- 由"
+                <i>{{ nav.user }}</i>
+                "创建 -->
               </span>
-              <span>{{ nav.date }}</span>
+              <span>{{ nav.create_time }}</span>
             </p>
           </router-link>
         </div>
@@ -37,51 +37,22 @@
   </div>
 </template>
 <script>
-// import { Header, Aside } from './components'
+import api from '@/api/repository'
+
 export default {
   name: 'Repositories',
   components: {},
   data() {
     return {
-      navList: [
-        {
-          path: '/repository/1',
-          title: '项目一',
-          name: '小张',
-          date: '2021/2/21'
-        },
-        {
-          path: '/repository/2',
-          title: '项目二',
-          name: '小李',
-          date: '2021/2/21'
-        },
-        {
-          path: '/repository/3',
-          title: '项目三',
-          name: '小丽',
-          date: '2021/2/21'
-        },
-        {
-          path: '/repository/4',
-          title: '项目四',
-          name: '小明',
-          date: '2021/2/21'
-        },
-        {
-          path: '/repository/5',
-          title: '项目五',
-          name: '小红',
-          date: '2021/2/21'
-        },
-        {
-          path: '/repository/6',
-          title: '项目六',
-          name: '小绿',
-          date: '2021/2/21'
-        }
-      ]
+      ownList: [],
+      otherList: []
     }
+  },
+  mounted() {
+    api.getRepoList({ all: 1 }).then((res) => {
+      this.ownList = res.data.data.own
+      this.otherList = res.data.data.other
+    })
   }
 }
 </script>
@@ -102,6 +73,9 @@ export default {
     flex-direction: row;
     justify-content: space-between;
     .allProject {
+      .allProject-title {
+        font-weight: 600;
+      }
       .project {
         display: inline-block;
         position: relative;
