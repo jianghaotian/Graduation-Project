@@ -9,7 +9,10 @@ const instance = axios.create({
 
 instance.interceptors.request.use(
   (config) => {
-    config.headers.Authorization = `Bearer ${store.getters.token}`
+    const token = store.getters.token
+    if (token) {
+      config.headers.Authorization = `Bearer ${store.getters.token}`
+    }
     return config
   },
   (error) => {
@@ -45,7 +48,7 @@ instance.interceptors.response.use(
     // }
     if (error.response.status === 401) {
       // store.dispatch('user/resetToken')
-      router.push('/')
+      router.push('/login')
     }
     Message({ type: 'error', message: error.response.data.message })
     return Promise.reject(error)

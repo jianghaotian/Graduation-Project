@@ -25,6 +25,10 @@ export default {
   methods: {
     handleDropdown(command) {
       console.log(command)
+      if (command === 'logout') {
+        this.$store.dispatch('user/resetToken')
+        this.$router.push('/login')
+      }
     }
   }
 }
