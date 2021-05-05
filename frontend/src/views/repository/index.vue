@@ -2,7 +2,7 @@
   <div class="repository">
     <el-container style="height: 100%">
       <el-main>
-        {{ url }}
+        {{ repoId }}
         <el-row style="padding: 10px">
           <!-- <el-dropdown @command="createView"> -->
           <el-button size="mini" @click="addFile()" icon="el-icon-circle-plus-outline" type="primary"
@@ -14,7 +14,7 @@
               <el-dropdown-item @click.native="addFile()" command="文件">文件</el-dropdown-item>
             </el-dropdown-menu>
           </el-dropdown> -->
-          <el-dropdown @command="createView">
+          <!-- <el-dropdown @command="createView">
             <el-button size="mini" icon="el-icon-upload" style="margin-left: 10px"
               >上传<i class="el-icon-arrow-down el-icon--right"></i
             ></el-button>
@@ -34,7 +34,21 @@
                 </el-upload>
               </el-dropdown-item>
             </el-dropdown-menu>
-          </el-dropdown>
+          </el-dropdown> -->
+          <el-upload
+            class="upload-demo"
+            action="/api/v1/file/upload"
+            :on-success="handlesuccess"
+            multiple
+            ref="upload"
+            :limit="3"
+            :on-exceed="handleExceed"
+            :data="data"
+            :headers="{ Authorization: `Bearer ${$store.getters.token}` }"
+            :on-remove="remove"
+          >
+            <el-button size="mini" icon="el-icon-upload" style="margin-left: 10px">上传</el-button>
+          </el-upload>
           <el-button size="mini" icon="el-icon-download" style="margin-left: 10px">下载</el-button>
           <el-button size="mini" icon="el-icon-delete" style="margin-left: 10px">删除</el-button>
         </el-row>
@@ -78,9 +92,17 @@
                 </el-dropdown>
               </template>
             </el-table-column>
-            <el-table-column min-width="2" prop="update_time" label="修改时间" />
-            <el-table-column min-width="1" prop="update_person" label="最近修改人" />
-            <el-table-column min-width="1" prop="size" label="大小" />
+            <el-table-column min-width="2" prop="update_time" label="修改时间">
+              <template slot-scope="scope">
+                <span>{{ $moment(scope.row.create_time).format('YYYY-DD-MM HH:mm:ss') }}</span>
+              </template>
+            </el-table-column>
+            <el-table-column min-width="1" prop="update_user" label="最近修改人" />
+            <el-table-column min-width="1" prop="size" label="大小">
+              <template slot-scope="scope">
+                <span>{{ scope.row.size }}b</span>
+              </template>
+            </el-table-column>
             <el-table-column min-width="1" type="selection" label="批量操作" align="center"></el-table-column>
             <!-- <div slot="empty">
             <p v-if="emptyText">暂无数据</p>
@@ -153,6 +175,8 @@
 
 <script>
 // import { Header, Aside } from './components'
+import fileApi from '@/api/file'
+import repositoryApi from '@/api/repository'
 
 export default {
   name: 'Repository',
@@ -160,7 +184,8 @@ export default {
   data() {
     return {
       activeName: 'MainFirst',
-      url: this.$route.params.id,
+      repoId: this.$route.params.id,
+      folderId: '',
       isSearchLoading: false,
       content: [],
       operationsHistory: [],
@@ -169,82 +194,51 @@ export default {
       rowid: '',
       rowData: [],
       members: [],
-      fileList: []
+      filesList: [],
+      data: {}
     }
   },
   watch: {
     $route: function () {
-      this.url = this.$route.params.id
+      this.repoId = this.$route.params.id
+      this.data = { repo_id: this.repoId }
+      if (this.$route.params.folderId || this.$route.params.folderId != undefined) {
+        this.folderId = this.$route.params.folderId
+        this.data = { repo_id: this.repoId, folder_id: this.folderId }
+      }
       this.initData()
+      repositoryApi
+        .getMember({ id: this.repoId })
+        .then((response) => {
+          this.members = response.data.data
+        })
+        .catch(() => {})
     }
   },
   created() {
+    this.data = { repo_id: this.repoId }
+    if (this.$route.params.folderId || this.$route.params.folderId != undefined) {
+      this.folderId = this.$route.params.folderId
+      this.data = { repo_id: this.repoId, folder_id: this.folderId }
+    }
     this.initData()
+    console.log(this.folderId, this.repoId)
   },
   methods: {
     initData() {
       this.isSearchLoading = true
-      if (this.url == 3) {
-        this.content = [
-          {
-            id: 1,
-            name: '1.xlsx',
-            update_time: '2021-04-25 20:01:02',
-            update_person: 'nancy',
-            size: '25B'
-          },
-          { id: 2, name: '2.txt', update_time: '2021-04-25 20:02:02', update_person: 'nancy', size: '30B' },
-          { id: 3, name: '3', update_time: '2021-03-25 20:04:02', update_person: 'nancy' }
-        ]
-        this.operationsHistory = [
-          {
-            id: '1',
-            time: '2021-04-25',
-            children: [
-              { id: '1-1', operations: '添加了1.xlsx', name: 'nancy', time: '20:01:02' },
-              { id: '1-2', operations: '添加了2.txt', name: 'nancy', time: '20:02:02' },
-              { id: '1-3', operations: '添加了3', name: 'nancy', time: '20:04:02' }
-            ]
+      fileApi
+        .fileList({ repo_id: this.repoId })
+        .then((response) => {
+          console.log(response)
+          this.content = response.data.data.list
+          for (let i = 0; i < this.content.length; i++) {
+            this.content[i].icon = this.fileType(this.content[i].name)
           }
-        ]
-      } else {
-        this.content = [
-          {
-            id: 1,
-            name: '1.mp4',
-            update_time: '2021-04-25 20:01:02',
-            update_person: 'nancy',
-            size: '25B'
-          },
-          { id: 2, name: '2.mp3', update_time: '2021-04-25 20:02:02', update_person: 'nancy', size: '30B' },
-          { id: 3, name: '3.zip', update_time: '2021-04-25 20:03:02', update_person: 'nancy', size: '50B' },
-          { id: 4, name: '4.ppt', update_time: '2021-04-25 20:04:02', update_person: 'nancy' }
-        ]
-        this.operationsHistory = [
-          {
-            id: '4',
-            time: '2021-04-25',
-            children: [
-              { id: '4-1', operations: '添加了4.ppt', name: 'nancy', time: '20:04:02' },
-              { id: '4-2', operations: '添加了2.mp3', name: 'nancy', time: '20:02:02' },
-              { id: '4-3', operations: '添加了3.zip', name: 'nancy', time: '20:03:02' }
-            ]
-          },
-          {
-            id: '3',
-            time: '2021-04-25',
-            children: [
-              { id: '3-1', operations: '添加了4.ppt', name: 'nancy', time: '20:04:02' },
-              { id: '3-2', operations: '添加了2.mp3', name: 'nancy', time: '20:02:02' },
-              { id: '3-3', operations: '添加了3.zip', name: 'nancy', time: '20:03:02' }
-            ]
-          }
-        ]
-      }
-      for (let i = 0; i < this.content.length; i++) {
-        this.content[i].icon = this.fileType(this.content[i].name)
-      }
-      this.isSearchLoading = false
+          console.log(this.content)
+          this.isSearchLoading = false
+        })
+        .catch(() => {})
     },
     fileType(name) {
       let type = name.split('.')[name.split('.').length - 1].toLocaleLowerCase()
@@ -333,14 +327,16 @@ export default {
       row.icon = this.fileType(row.name)
     },
     handleClick(targetName) {
-      console.log(targetName.index)
+      // this.targetName=targetName
+      console.log(targetName)
       if (targetName.index == 1) {
-        this.members = [
-          { id: '1', name: 'nancy', head_thumb: 'pic', type: 0 },
-          { id: '2', name: 'mary', head_thumb: 'pic', type: 1 },
-          { id: '3', name: 'mike', head_thumb: 'pic', type: 2 },
-          { id: '4', name: 'jane', head_thumb: 'pic', type: 3 }
-        ]
+        repositoryApi
+          .getMember({ id: this.repoId })
+          .then((response) => {
+            console.log(response)
+            this.members = response.data.data
+          })
+          .catch(() => {})
       }
     },
     addMember() {},
@@ -350,12 +346,16 @@ export default {
       )
     },
     handlesuccess(response) {
-      //response即为后台返回的全部内容
-      if (response.success === 1) {
-        console.log('解析成功')
+      if (response.code == 0) {
+        this.$message({ message: '上传成功。', type: 'success' })
       } else {
-        console.log('解析失败')
+        this.$message({ message: '上传失败。', type: 'error' })
       }
+      this.$refs.upload.clearFiles()
+      this.initData()
+    },
+    remove() {
+      this.$refs.upload.clearFiles()
     }
   }
 }
@@ -461,5 +461,9 @@ export default {
   transform: rotate(90deg);
   float: right;
   line-height: 28px;
+}
+.upload-demo {
+  margin: 0;
+  display: inline-block;
 }
 </style>

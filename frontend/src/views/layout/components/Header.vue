@@ -7,7 +7,7 @@
           <el-avatar :size="32" src="https://empty">
             <img src="@/assets/images/default-user.png" />
           </el-avatar>
-          <span class="name">姜皓天</span>
+          <span class="name">{{ name }}</span>
         </div>
         <el-dropdown-menu slot="dropdown">
           <el-dropdown-item command="feedback">意见反馈</el-dropdown-item>
@@ -46,6 +46,7 @@
 </template>
 
 <script>
+import userApi from '@/api/user'
 export default {
   name: 'Header',
   data() {
@@ -75,6 +76,7 @@ export default {
     }
     return {
       isEditDialogVisible: false,
+      name: '',
       IDSetup: {
         head_thumb: '',
         name: '',
@@ -99,6 +101,15 @@ export default {
         ]
       }
     }
+  },
+  created() {
+    userApi
+      .info()
+      .then((response) => {
+        console.log(response)
+        this.name = response.data.data.name
+      })
+      .catch(() => {})
   },
   methods: {
     handleDropdown(command) {

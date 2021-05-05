@@ -13,7 +13,7 @@
                 <i>{{ nav.user }}</i>
                 "创建 -->
               </span>
-              <span>{{ nav.create_time }}</span>
+              <span>{{ $moment(nav.create_time).format('YYYY-DD-MM HH:mm:ss') }}</span>
             </p>
           </router-link>
         </div>

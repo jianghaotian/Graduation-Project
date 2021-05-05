@@ -135,7 +135,7 @@
 </template>
 
 <script>
-// import loginApi from '@/api/user'
+import api from '@/api/account'
 export default {
   data() {
     let checkPwd = (rule, value, callback) => {
@@ -305,33 +305,29 @@ export default {
           let content = {}
           content.username = this.verificationLogin.username
           content.type = this.userNameType(this.verificationLogin.username)
-          content = JSON.stringify(content)
-          let me = this
-          // me.isDisabled = true
-          let interval = window.setInterval(function () {
-            me.buttonName = '（' + me.time + '秒）后可重新发送'
-            --me.time
-            if (me.time < 0) {
-              me.buttonName = '重新发送'
-              me.time = 60
-              // me.isDisabled = false
-              me.isLoginCaptcha = false
-              window.clearInterval(interval)
-            }
-          }, 1000)
-          // loginApi
-          //   .verification(content)
-          //   .then((response) => {
-          //     console.log(response)
-          //     if (response.data.code === 0) {
-          //       this.$message({ message: '获取成功。', type: 'success' })
-          //     } else {
-          //       this.$message({ message: '获取失败。', type: 'error' })
-          //     }
-          //     this.isLoginCaptcha = false
-          //   })
-          //   .catch(() => {})
-          //   .then(() => {})
+          api
+            .verification(content)
+            .then((response) => {
+              console.log(response)
+              if (response.data.code === 0) {
+                this.$message({ message: '获取成功。', type: 'success' })
+              } else {
+                this.$message({ message: '获取失败。', type: 'error' })
+              }
+              let me = this
+              let interval = window.setInterval(function () {
+                me.buttonName = '(' + me.time + '秒)后可重新发送'
+                --me.time
+                if (me.time < 0) {
+                  me.buttonName = '重新发送'
+                  me.isLoginCaptcha = false
+                  window.clearInterval(interval)
+                  me.time = 60
+                }
+              }, 1000)
+            })
+            .catch(() => {})
+            .then(() => {})
         } else {
           this.$message.error('邮箱/手机号格式填写不正确')
         }
@@ -346,23 +342,23 @@ export default {
           content.username = this.verificationLogin.username
           content.verification = this.verificationLogin.verification
           content.type = this.userNameType(this.verificationLogin.username)
-          content = JSON.stringify(content)
+          // content = JSON.stringify(content)
           console.log(content)
           this.$router.push('/')
-          // this.isLogining = true
-          // loginApi
-          //   .loginVerification(content)
-          //   .then((response) => {
-          //     console.log(response)
-          //     if (response.data.code === 0) {
-          //       this.$message({ message: '登录成功。', type: 'success' })
-          //     } else {
-          //       this.$message({ message: '登录失败。', type: 'error' })
-          //     }
-          //     this.isLogining = false
-          //   })
-          //   .catch(() => {})
-          //   .then(() => {})
+          this.isLogining = true
+          api
+            .loginVerification(content)
+            .then((response) => {
+              console.log(response)
+              if (response.data.code === 0) {
+                this.$message({ message: '登录成功。', type: 'success' })
+              } else {
+                this.$message({ message: '登录失败。', type: 'error' })
+              }
+              this.isLogining = false
+            })
+            .catch(() => {})
+            .then(() => {})
         }
       })
     },
@@ -382,36 +378,32 @@ export default {
           let content = {}
           content.username = this.register.username
           content.type = this.userNameType(this.register.username)
-          content = JSON.stringify(content)
-          let me = this
-          // me.isDisabled = true
-          let interval1 = window.setInterval(function () {
-            me.buttonName1 = '（' + me.time1 + '秒）后可重新发送'
-            --me.time1
-            if (me.time1 < 0) {
-              me.buttonName1 = '重新发送'
-              me.time1 = 60
-              // me.isDisabled = false
-              me.isgettingLoading = false
-              window.clearInterval(interval1)
-            }
-          }, 1000)
-          // loginApi
-          //   .verification(content)
-          //   .then((response) => {
-          //     console.log(response)
-          //     if (response.data.code === 0) {
-          //       this.captchaNum = response.data.data
-          //       this.$message({ message: '获取成功。', type: 'success' })
-          //     } else {
-          //       this.$message({ message: '获取失败。', type: 'error' })
-          //     }
-          //     this.isgettingLoading = false
-          //   })
-          //   .catch(() => {})
-          //   .then(() => {
-          //     this.isEditSubmitting = false
-          //   })
+          api
+            .verification(content)
+            .then((response) => {
+              console.log(response)
+              if (response.data.code === 0) {
+                this.captchaNum = response.data.data
+                this.$message({ message: '获取成功。', type: 'success' })
+              } else {
+                this.$message({ message: '获取失败。', type: 'error' })
+              }
+              let me = this
+              let interval1 = window.setInterval(function () {
+                me.buttonName1 = '(' + me.time1 + '秒)后可重新发送'
+                --me.time1
+                if (me.time1 < 0) {
+                  me.buttonName1 = '重新发送'
+                  me.isgettingLoading = false
+                  window.clearInterval(interval1)
+                  me.time1 = 60
+                }
+              }, 1000)
+            })
+            .catch(() => {})
+            .then(() => {
+              this.isEditSubmitting = false
+            })
         } else {
           this.$message.error('邮箱/手机号格式填写不正确')
         }
@@ -427,20 +419,20 @@ export default {
           // this.register = JSON.stringify(this.register)
           console.log(this.register)
           this.isEditSubmitting = true
-          // loginApi
-          //   .register(this.register)
-          //   .then((response) => {
-          //     if (response.data.code === 0) {
-          //       this.$message({ message: '注册成功。', type: 'success' })
-          //     } else {
-          //       this.$message({ message: '注册失败。', type: 'error' })
-          //     }
-          //     this.isEditDialogVisible = false
-          //   })
-          //   .catch(() => {})
-          //   .then(() => {
-          //     this.isEditSubmitting = false
-          //   })
+          api
+            .register(this.register)
+            .then((response) => {
+              if (response.data.code === 0) {
+                this.$message({ message: '注册成功。', type: 'success' })
+              } else {
+                this.$message({ message: '注册失败。', type: 'error' })
+              }
+              this.isEditDialogVisible = false
+            })
+            .catch(() => {})
+            .then(() => {
+              this.isEditSubmitting = false
+            })
         }
       })
     },
@@ -460,35 +452,32 @@ export default {
           let content = {}
           content.username = this.verificationChange.username
           content.type = this.userNameType(this.verificationChange.username)
-          content = JSON.stringify(content)
-          let me = this
-          // me.isDisabled = true
-          let interval = window.setInterval(function () {
-            me.buttonName2 = '（' + me.time2 + '秒）后可重新发送'
-            --me.time2
-            if (me.time2 < 0) {
-              me.buttonName2 = '重新发送'
-              me.time2 = 60
-              // me.isDisabled = false
-              me.isgettingLoading2 = false
-              window.clearInterval(interval)
-            }
-          }, 1000)
-          // loginApi
-          //   .verification(content)
-          //   .then((response) => {
-          //     console.log(response)
-          //     if (response.data.code === 0) {
-          //       this.$message({ message: '获取成功。', type: 'success' })
-          //     } else {
-          //       this.$message({ message: '获取失败。', type: 'error' })
-          //     }
-          //     this.isgettingLoading2 = false
-          //   })
-          //   .catch(() => {})
-          //   .then(() => {
-          //     this.isEditSubmitting2 = false
-          //   })
+
+          api
+            .verification(content)
+            .then((response) => {
+              console.log(response)
+              if (response.data.code === 0) {
+                this.$message({ message: '获取成功。', type: 'success' })
+              } else {
+                this.$message({ message: '获取失败。', type: 'error' })
+              }
+              let me = this
+              let interval = window.setInterval(function () {
+                me.buttonName2 = '(' + me.time2 + '秒)后可重新发送'
+                --me.time2
+                if (me.time2 < 0) {
+                  me.buttonName2 = '重新发送'
+                  me.isgettingLoading2 = false
+                  window.clearInterval(interval)
+                  me.time2 = 60
+                }
+              }, 1000)
+            })
+            .catch(() => {})
+            .then(() => {
+              this.isEditSubmitting2 = false
+            })
         } else {
           this.$message.error('邮箱/手机号格式填写不正确')
         }
@@ -503,21 +492,21 @@ export default {
           // this.verificationChange = JSON.stringify(this.verificationChange)
           console.log(this.verificationChange)
           this.isEditSubmitting2 = true
-          // loginApi
-          //   .changeVerification(this.verificationChange)
-          //   .then((response) => {
-          //     if (response.data.code === 0) {
-          //       this.isEditDialogVisible2 = false
-          //       this.$message({ message: '找回成功。', type: 'success' })
-          //     } else {
-          //       this.$message({ message: '找回失败。', type: 'error' })
-          //     }
-          //     // console.log(this.tablePage.content)
-          //   })
-          //   .catch(() => {})
-          //   .then(() => {
-          //     this.isEditSubmitting2 = false
-          //   })
+          api
+            .changeVerification(this.verificationChange)
+            .then((response) => {
+              if (response.data.code === 0) {
+                this.isEditDialogVisible2 = false
+                this.$message({ message: '找回成功。', type: 'success' })
+              } else {
+                this.$message({ message: '找回失败。', type: 'error' })
+              }
+              // console.log(this.tablePage.content)
+            })
+            .catch(() => {})
+            .then(() => {
+              this.isEditSubmitting2 = false
+            })
         }
       })
     }

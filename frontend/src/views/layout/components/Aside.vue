@@ -4,37 +4,35 @@
       <el-button round size="small" icon="el-icon-plus" @click="create">新建仓库</el-button>
     </div>
     <div class="repositories">
+      <!-- <router-link to="/" class="item">
+        <i class="el-icon-folder"></i>
+        仓库1首页测试
+      </router-link> -->
       <el-collapse :value="['1', '2']">
         <el-collapse-item title="我创建的仓库" name="1">
           <div class="repo-list">
-            <router-link to="/" class="item">
-              <i class="el-icon-folder"></i>
-              仓库1首页测试
-            </router-link>
-            <router-link to="/repository/3" class="item">
-              <i class="el-icon-folder"></i>
-              名字很长很长很长很长很长很长很长很长很长的仓库2
-            </router-link>
-            <router-link to="/repository/4" class="item">
-              <i class="el-icon-folder"></i>
-              仓库仓库3
-            </router-link>
-            <router-link to="/buzhengquedeluyou" class="item">
-              <i class="el-icon-folder"></i>
-              仓库404测试
-            </router-link>
+            <div v-for="item in ownList" :key="item.id">
+              <router-link :to="'/repository/' + item.id" class="item">
+                <i class="el-icon-folder"></i>
+                {{ item.name }}
+              </router-link>
+            </div>
+            <!-- <div>
+              <router-link to="/buzhengquedeluyou" class="item">
+                <i class="el-icon-folder"></i>
+                仓库404测试
+              </router-link>
+            </div> -->
           </div>
         </el-collapse-item>
         <el-collapse-item title="加入的仓库" name="2">
           <div class="repo-list">
-            <router-link to="/repository/11" class="item">
-              <i class="el-icon-folder"></i>
-              仓库1
-            </router-link>
-            <router-link to="/repository/22" class="item">
-              <i class="el-icon-folder"></i>
-              仓库仓库仓库2
-            </router-link>
+            <div v-for="item in otherList" :key="item.id">
+              <router-link :to="'/repository/' + item.id" class="item">
+                <i class="el-icon-folder"></i>
+                {{ item.name }}
+              </router-link>
+            </div>
           </div>
         </el-collapse-item>
       </el-collapse>
@@ -65,6 +63,7 @@
 
 <script>
 // import { Header } from './components'
+import api from '@/api/repository'
 
 export default {
   name: 'Aside',
@@ -77,8 +76,16 @@ export default {
       },
       rules: {
         name: [{ required: true, message: '仓库名称不能为空', trigger: 'blur' }]
-      }
+      },
+      ownList: [],
+      otherList: []
     }
+  },
+  mounted() {
+    api.getRepoList({ all: 1 }).then((res) => {
+      this.ownList = res.data.data.own
+      this.otherList = res.data.data.other
+    })
   },
   methods: {
     create() {
@@ -88,7 +95,24 @@ export default {
         this.$refs.repository.clearValidate()
       })
     },
-    addrepository() {}
+    addrepository() {
+      api
+        .createRepository(this.repository)
+        .then((response) => {
+          console.log(response)
+          this.isEditDialogVisible = false
+          if (response.data.code === 0) {
+            this.$message({ message: '创建成功。', type: 'success' })
+            api.getRepoList({ all: 1 }).then((res) => {
+              this.ownList = res.data.data.own
+              this.otherList = res.data.data.other
+            })
+          } else {
+            this.$message({ message: '创建失败。', type: 'error' })
+          }
+        })
+        .catch(() => {})
+    }
   }
 }
 </script>

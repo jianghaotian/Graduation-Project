@@ -11,7 +11,9 @@ import App from './App.vue'
 import store from './store'
 import router from './router'
 import '@/assets/iconfont/iconfont.js'
+import moment from 'moment' //导入文件
 
+Vue.prototype.$moment = moment //赋值使用
 Vue.config.productionTip = false
 
 Vue.use(ElementUI)
