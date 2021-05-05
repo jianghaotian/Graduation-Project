@@ -2,7 +2,7 @@
  * 服务 - 用户信息
  */
 const {
-  updateEmailById, updatePhoneById, updateNameById, queryUserById,
+  updateEmailById, updatePhoneById, updateNameById, queryUserById, queryUserByName,
 } = require('../db/user');
 const { deleteVeri } = require('../db/verification');
 const { judgeVeri } = require('./common/verification');
@@ -69,8 +69,8 @@ const changeHead = async (data) => {
  * 搜索用户
  */
 const search = async ({ username }) => {
-  console.log(username);
-  return { error: false };
+  const list = await queryUserByName({ name: username });
+  return { error: false, data: list };
 };
 
 module.exports = {

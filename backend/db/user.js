@@ -77,6 +77,15 @@ const queryUserById = async ({ id }) => {
   return row;
 };
 
+/** SELECT
+ * 通过用户name模糊搜索用户信息
+ */
+const queryUserByName = async ({ name }) => {
+  const sql = 'SELECT id, name, head_thumb FROM xy.user WHERE position($1 in name) != 0';
+  const row = await runSql(sql, [name]);
+  return row;
+};
+
 module.exports = {
   insertUser,
   updatePwdById,
@@ -86,4 +95,5 @@ module.exports = {
   queryUserIdByUsername,
   queryUserIdByPwd,
   queryUserById,
+  queryUserByName,
 };
