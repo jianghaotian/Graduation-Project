@@ -50,7 +50,7 @@ app.use(koaBody({
   },
 }));
 
-// 将query重的token添加到header
+// 将query中的token添加到header
 app.use(async (ctx, next) => {
   const params = { ...ctx.request.query, ...ctx.request.body };
   if (params.jwtToken) {
@@ -68,12 +68,14 @@ const accountRoute = require('./routes/account');
 const userRoute = require('./routes/user');
 const repositoryRoute = require('./routes/repository');
 const fileRoute = require('./routes/file');
+const historyRoute = require('./routes/history');
 
 // 配置路由
 app.use(accountRoute.routes(), accountRoute.allowedMethods());
 app.use(userRoute.routes(), userRoute.allowedMethods());
 app.use(repositoryRoute.routes(), repositoryRoute.allowedMethods());
 app.use(fileRoute.routes(), fileRoute.allowedMethods());
+app.use(historyRoute.routes(), historyRoute.allowedMethods());
 
 // 应用程序初始化完成
 // eslint-disable-next-line no-console
