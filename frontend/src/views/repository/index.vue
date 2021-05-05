@@ -2,7 +2,7 @@
   <div class="repository">
     <el-container style="height: 100%">
       <el-main>
-        {{ repoId }}
+        {{ repoInfo.name || repoId }}
         <el-row style="padding: 10px">
           <!-- <el-dropdown @command="createView"> -->
           <el-button size="mini" @click="addFile()" icon="el-icon-circle-plus-outline" type="primary"
@@ -191,6 +191,7 @@ export default {
       operationsHistory: [],
       showClickIcon: false,
       showInfo: false,
+      repoInfo: {}, // 项目信息
       rowid: '',
       rowData: [],
       members: [],
@@ -239,6 +240,9 @@ export default {
           this.isSearchLoading = false
         })
         .catch(() => {})
+      repositoryApi.getRepoInfo({ id: this.repoId }).then((res) => {
+        this.repoInfo = res.data.data
+      })
     },
     fileType(name) {
       let type = name.split('.')[name.split('.').length - 1].toLocaleLowerCase()
@@ -374,7 +378,7 @@ export default {
 .repository {
   height: 100%;
   .rightTab {
-    border-left: 1px solid #e4e7ed;
+    border-left: 1px solid #efeff0;
     .dynamics {
       width: 100%;
       height: 100%;
@@ -450,20 +454,25 @@ export default {
   }
 }
 </style>
-<style>
-.el-tabs__content {
-  height: calc(100% - 40px);
-}
-.el-input {
-  width: 80%;
-}
-.pointerIcon {
-  transform: rotate(90deg);
-  float: right;
-  line-height: 28px;
-}
-.upload-demo {
-  margin: 0;
-  display: inline-block;
+<style lang="scss">
+.repository {
+  .el-upload-list {
+    display: none;
+  }
+  .el-tabs__content {
+    height: calc(100% - 40px);
+  }
+  .el-input {
+    width: 80%;
+  }
+  .pointerIcon {
+    transform: rotate(90deg);
+    float: right;
+    line-height: 28px;
+  }
+  .upload-demo {
+    margin: 0;
+    display: inline-block;
+  }
 }
 </style>

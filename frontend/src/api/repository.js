@@ -8,6 +8,12 @@ export default {
       method: 'get',
       params: data
     }),
+  getRepoInfo: (data) =>
+    request({
+      url: '/v1/repository/info',
+      method: 'get',
+      params: data
+    }),
   createRepository: (data) =>
     request({
       url: '/v1/repository/create',

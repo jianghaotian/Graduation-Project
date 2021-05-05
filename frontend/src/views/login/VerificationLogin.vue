@@ -344,7 +344,6 @@ export default {
           content.type = this.userNameType(this.verificationLogin.username)
           // content = JSON.stringify(content)
           console.log(content)
-          this.$router.push('/')
           this.isLogining = true
           api
             .loginVerification(content)
@@ -352,6 +351,8 @@ export default {
               console.log(response)
               if (response.data.code === 0) {
                 this.$message({ message: '登录成功。', type: 'success' })
+                this.$store.dispatch('user/setToken', response.data.data.token)
+                this.$router.push('/')
               } else {
                 this.$message({ message: '登录失败。', type: 'error' })
               }

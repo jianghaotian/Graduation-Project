@@ -4,25 +4,15 @@
       <el-button round size="small" icon="el-icon-plus" @click="create">新建仓库</el-button>
     </div>
     <div class="repositories">
-      <!-- <router-link to="/" class="item">
-        <i class="el-icon-folder"></i>
-        仓库1首页测试
-      </router-link> -->
       <el-collapse :value="['1', '2']">
         <el-collapse-item title="我创建的仓库" name="1">
           <div class="repo-list">
             <div v-for="item in ownList" :key="item.id">
               <router-link :to="'/repository/' + item.id" class="item">
                 <i class="el-icon-folder"></i>
-                {{ item.name }}
+                <span class="title">{{ item.name }}</span>
               </router-link>
             </div>
-            <!-- <div>
-              <router-link to="/buzhengquedeluyou" class="item">
-                <i class="el-icon-folder"></i>
-                仓库404测试
-              </router-link>
-            </div> -->
           </div>
         </el-collapse-item>
         <el-collapse-item title="加入的仓库" name="2">
@@ -30,7 +20,7 @@
             <div v-for="item in otherList" :key="item.id">
               <router-link :to="'/repository/' + item.id" class="item">
                 <i class="el-icon-folder"></i>
-                {{ item.name }}
+                <span class="title">{{ item.name }}</span>
               </router-link>
             </div>
           </div>
@@ -155,13 +145,16 @@ export default {
         display: block;
         height: 36px;
         line-height: 36px;
-        padding-left: 32px;
+        padding-left: 32px + 16px;
         padding-right: 16px;
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
         &:hover {
           background-color: #fff;
+        }
+        .title {
+          padding-left: 8px;
         }
       }
     }
