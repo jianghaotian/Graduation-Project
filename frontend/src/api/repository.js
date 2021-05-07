@@ -20,6 +20,12 @@ export default {
       method: 'post',
       data: data
     }),
+  deleteRepository: (data) =>
+    request({
+      url: '/v1/repository/delete',
+      method: 'post',
+      data: data
+    }),
   getMember: (data) =>
     request({
       url: '/v1/repository/member',
