@@ -4,16 +4,16 @@
 const { runSql } = require('../utils/db');
 
 /** INSERT
- * permission表增加一条字段
+ * history表增加一条字段
  */
-// const insertFile = async ({
-//   uid, name, type, size, id, repoId, folderId,
-// }) => {
-//   const sql = 'INSERT INTO xy.file (uid, name, type, size, create_user_id, update_user_id, update_time, repository_id, folder_id, delete)'
-//      + 'VALUES ($1, $2, $3, $4, $5, $5, $6, $7, $8, 0)';
-//   const row = await runSql(sql, [uid, name, type, size, id, new Date(), repoId, folderId]);
-//   return row;
-// };
+const insertHistory = async ({
+  repoId, fileId, fileUid, type, userId, fileName,
+}) => {
+  const sql = 'INSERT INTO xy.history (repository_id, file_id, file_uid, type, user_id, file_name)'
+     + 'VALUES ($1, $2, $3, $4, $5, $6)';
+  const row = await runSql(sql, [repoId, fileId, fileUid, type, userId, fileName]);
+  return row;
+};
 
 /** UPDATE
  * 通过仓库id删除记录(delete = 1)
@@ -58,7 +58,7 @@ const queryHistoryList = async ({ repoId, fileId }) => {
 // };
 
 module.exports = {
-  // insertFile,
+  insertHistory,
   // updateDeleteById,
   // updateNameById,
   queryHistoryList,

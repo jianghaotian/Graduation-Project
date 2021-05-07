@@ -43,11 +43,20 @@ const queryFileList = async ({ repoId, folderId }) => {
 };
 
 /** SELECT
- * 查询文件列表
+ * 根据uid查询文件
  */
 const queryFileByUid = async ({ uid }) => {
   const sql = 'SELECT * FROM xy.file WHERE uid = $1';
   const row = await runSql(sql, [uid]);
+  return row;
+};
+
+/** SELECT
+ * 根据id查询文件
+ */
+const queryFileById = async ({ id }) => {
+  const sql = 'SELECT * FROM xy.file WHERE id = $1';
+  const row = await runSql(sql, [id]);
   return row;
 };
 
@@ -57,4 +66,5 @@ module.exports = {
   updateNameById,
   queryFileList,
   queryFileByUid,
+  queryFileById,
 };

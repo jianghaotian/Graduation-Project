@@ -9,7 +9,11 @@ const {
   updateNameById,
   queryFileList,
   queryFileByUid,
+  queryFileById,
 } = require('../db/file');
+const {
+  insertHistory,
+} = require('../db/history');
 const {
   queryUserById,
 } = require('../db/user');
@@ -53,7 +57,17 @@ const uploadFile = async ({ repo_id, folder_id }, id, files) => {
         repoId: repo_id,
         folderId,
       }).then(() => {
-        resolve();
+        queryFileByUid({ uid: fileList[i].uuid }).then((res) => {
+          insertHistory({
+            repoId: repo_id,
+            fileId: res[0].id,
+            fileUid: fileList[i].uuid,
+            type: 'new',
+            userId: id,
+            fileName: fileList[i].name,
+          });
+          resolve();
+        });
       }).catch(reject);
     }));
   }
@@ -82,15 +96,33 @@ const newFolder = async ({ repo_id, folder_id, name }, id) => {
  * 文件重命名
  */
 const renameFile = async ({ id, name }, userId) => {
+  const res = await queryFileById({ id });
   await updateNameById({ name, id, userId });
+  await insertHistory({
+    repoId: res[0].repository_id,
+    fileId: id,
+    fileUid: res[0].uid,
+    type: 'rename',
+    userId,
+    fileName: name,
+  });
   return { error: false };
 };
 
 /**
  * 删除文件
  */
-const deleteFile = async ({ id }) => {
+const deleteFile = async ({ id }, userId) => {
+  const res = await queryFileById({ id });
   await updateDeleteById({ id });
+  await insertHistory({
+    repoId: res[0].repository_id,
+    fileId: id,
+    fileUid: res[0].uid,
+    type: 'delete',
+    userId,
+    fileName: res[0].name,
+  });
   return { error: false };
 };
 
