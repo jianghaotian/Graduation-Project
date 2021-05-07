@@ -67,10 +67,15 @@
         </el-row>
         <el-row style="padding: 10px">
           <!-- <a><i class="el-icon-back"></i> 返回上一级</a> -->
-          <router-link :to="'/repository/' + repoInfo.id"> {{ repoInfo.name || repoId }} </router-link>
+          <router-link :to="'/repository/' + repoId"> 仓库根目录 </router-link>
           <div style="display: inline-block">
-            >
-            <router-link :to="backRoute"> 返回上一级 </router-link>
+            <span v-for="path in folderPath" :key="'path_' + path.id">
+              >
+              <router-link :to="'/repository/' + repoId + '/' + path.id">
+                {{ path.name }}
+              </router-link>
+            </span>
+            <!-- <router-link :to="backRoute"> 返回上一级 </router-link> -->
           </div>
         </el-row>
         <!-- <el-row style="padding: 10px" v-else>全部文件({{ content.length }})</el-row> -->
@@ -105,10 +110,9 @@
                   v-model="scope.row.name"
                 ></el-input>
                 <router-link
-                  :to="$route.path + '/' + scope.row.uid"
+                  :to="'/repository/' + repoId + '/' + scope.row.uid"
                   v-show="!scope.row.show && !scope.row.rename && scope.row.icon == '#icon-file-b-2'"
-                >
-                  <span @click="floderName = scope.row.name">{{ scope.row.name }}</span>
+                  >{{ scope.row.name }}
                 </router-link>
                 <!-- <span v-show="!scope.row.show && scope.row.icon == '#icon-file-b-2'" @click="a(scope.row.folder_id)">{{
                   scope.row.name
@@ -260,19 +264,22 @@ export default {
       repositoryName: '',
       repositoryDesc: '',
       type: '',
-      floderName: '',
-      backRoute: ''
+      folderPath: []
     }
   },
   watch: {
     $route: function (to, from) {
       console.log(to, from, this.$route.params)
-      this.backRoute = from
       this.repoId = this.$route.params.id
       this.data = { repo_id: this.repoId }
       if (this.$route.params.folderId || this.$route.params.folderId != undefined) {
         this.folderId = this.$route.params.folderId
         this.data = { repo_id: this.repoId, folder_id: this.folderId }
+        fileApi.folderPath({ folder_id: this.folderId }).then((res) => {
+          this.folderPath = res.data.data.list
+        })
+      } else {
+        this.folderPath = []
       }
       console.log(this.data)
       this.initData()
@@ -289,6 +296,9 @@ export default {
     if (this.$route.params.folderId || this.$route.params.folderId != undefined) {
       this.folderId = this.$route.params.folderId
       this.data = { repo_id: this.repoId, folder_id: this.folderId }
+      fileApi.folderPath({ folder_id: this.folderId }).then((res) => {
+        this.folderPath = res.data.data.list
+      })
     }
     this.initData()
   },

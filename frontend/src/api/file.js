@@ -7,6 +7,12 @@ export default {
       method: 'get',
       params: data
     }),
+  folderPath: (data) =>
+    request({
+      url: '/v1/file/path',
+      method: 'get',
+      params: data
+    }),
   deleteFile: (data) =>
     request({
       url: '/v1/file/delete',
