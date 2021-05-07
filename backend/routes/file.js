@@ -6,6 +6,7 @@ const { baseURL } = require('../config');
 const genRouter = require('../utils/router');
 const {
   getListSchema,
+  getPathSchema,
   uploadSchema,
   newFolderSchema,
   renameFileSchema,
@@ -13,6 +14,7 @@ const {
 } = require('../validator/file');
 const {
   getList,
+  getPath,
   uploadFile,
   newFolder,
   renameFile,
@@ -31,6 +33,18 @@ router.get('/list', async (ctx) => {
     schema: getListSchema,
     data: ctx.query,
     service: getList,
+  });
+});
+
+/**
+ * 获取仓库列表
+ */
+router.get('/path', async (ctx) => {
+  await genRouter({
+    ctx,
+    schema: getPathSchema,
+    data: ctx.query,
+    service: getPath,
   });
 });
 

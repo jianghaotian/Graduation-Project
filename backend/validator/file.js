@@ -15,6 +15,13 @@ const getListSchema = Joi.object({
 });
 
 /**
+ * 获取仓库列表
+ */
+const getPathSchema = Joi.object({
+  folder_id: repoId,
+});
+
+/**
  * 上传文件
  */
 const uploadSchema = any;
@@ -45,6 +52,7 @@ const deleteFileSchema = Joi.object({
 
 module.exports = {
   getListSchema,
+  getPathSchema,
   uploadSchema,
   newFolderSchema,
   renameFileSchema,

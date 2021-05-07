@@ -43,6 +43,15 @@ const queryFileList = async ({ repoId, folderId }) => {
 };
 
 /** SELECT
+ * 根据uid查询父文件夹uid
+ */
+const queryPathByUid = async ({ uid }) => {
+  const sql = 'SELECT folder_id FROM xy.file WHERE uid = $1';
+  const row = await runSql(sql, [uid]);
+  return row;
+};
+
+/** SELECT
  * 根据uid查询文件
  */
 const queryFileByUid = async ({ uid }) => {
@@ -65,6 +74,7 @@ module.exports = {
   updateDeleteById,
   updateNameById,
   queryFileList,
+  queryPathByUid,
   queryFileByUid,
   queryFileById,
 };

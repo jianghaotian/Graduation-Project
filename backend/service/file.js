@@ -17,6 +17,7 @@ const {
 const {
   queryUserById,
 } = require('../db/user');
+const { getParentFolderId } = require('./common/file');
 const { getUuid, getNilUuid } = require('../utils/uuid');
 
 /**
@@ -36,6 +37,32 @@ const getList = async ({ repo_id, folder_id }) => {
     }));
   }
   const list = await Promise.all(promiseList);
+  return { error: false, data: { list } };
+};
+
+/**
+ * 获取文件路径
+ */
+const getPath = async ({ folder_id }) => {
+  let parentUid = folder_id;
+  const list = [];
+
+  const res = await queryFileByUid({ uid: parentUid });
+  const { name } = res[0];
+  list.unshift({ name, id: parentUid });
+
+  while (parentUid !== getNilUuid()) {
+    // eslint-disable-next-line no-await-in-loop
+    const res1 = await getParentFolderId({ folderId: parentUid });
+    parentUid = res1.parentUid;
+    if (parentUid === getNilUuid()) {
+      break;
+    }
+    // eslint-disable-next-line no-await-in-loop
+    const res2 = await queryFileByUid({ uid: parentUid });
+    const name1 = res2[0].name;
+    list.unshift({ name: name1, id: parentUid });
+  }
   return { error: false, data: { list } };
 };
 
@@ -139,6 +166,7 @@ const downloadFile = async ({ uid }, userId, ctx) => {
 
 module.exports = {
   getList,
+  getPath,
   uploadFile,
   newFolder,
   renameFile,
