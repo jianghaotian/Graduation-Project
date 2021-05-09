@@ -3,7 +3,7 @@
  */
 const Joi = require('joi');
 const {
-  repoId,
+  repoId, any,
 } = require('./common');
 
 /**
@@ -11,7 +11,7 @@ const {
  */
 const getListSchema = Joi.object({
   repo_id: repoId,
-  file_id: repoId,
+  file_id: any,
 });
 
 module.exports = {
