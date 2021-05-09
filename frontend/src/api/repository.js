@@ -31,6 +31,18 @@ export default {
       url: '/v1/repository/member',
       method: 'get',
       params: data
+    }),
+  reviseInfo: (data) =>
+    request({
+      url: '/v1/repository/info',
+      method: 'post',
+      data: data
+    }),
+  addMember: (data) =>
+    request({
+      url: '/v1/repository/member/add',
+      method: 'post',
+      data: data
     })
 }
 // export function login(data) {

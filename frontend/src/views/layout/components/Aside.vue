@@ -54,6 +54,7 @@
 <script>
 // import { Header } from './components'
 import api from '@/api/repository'
+import refresh from '@/utils/refresh'
 
 export default {
   name: 'Aside',
@@ -70,6 +71,19 @@ export default {
       ownList: [],
       otherList: []
     }
+  },
+  created() {
+    refresh.$on('refresh', (val) => {
+      //接收save.vue中传过来的data_1的值
+      // this.refresh = val
+      // console.log(this.refresh)
+      if (val == true) {
+        api.getRepoList({ all: 1 }).then((res) => {
+          this.ownList = res.data.data.own
+          this.otherList = res.data.data.other
+        })
+      }
+    })
   },
   mounted() {
     api.getRepoList({ all: 1 }).then((res) => {

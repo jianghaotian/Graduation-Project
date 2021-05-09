@@ -24,5 +24,11 @@ export default {
       url: '/v1/file/new/folder',
       method: 'post',
       data: data
+    }),
+  rename: (data) =>
+    request({
+      url: '/v1/file/rename',
+      method: 'post',
+      data: data
     })
 }

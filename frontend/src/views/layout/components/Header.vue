@@ -7,7 +7,7 @@
           <el-avatar :size="32" src="https://empty">
             <img src="@/assets/images/default-user.png" />
           </el-avatar>
-          <span class="name">{{ name }}</span>
+          <span class="name">{{ info.name }}</span>
         </div>
         <el-dropdown-menu slot="dropdown">
           <el-dropdown-item command="feedback">意见反馈</el-dropdown-item>
@@ -17,29 +17,139 @@
       </el-dropdown>
     </div>
     <el-dialog
-      :title="'账号设置'"
+      :title="'个人信息'"
       :close-on-click-modal="false"
       :append-to-body="true"
       :visible.sync="isEditDialogVisible"
       width="520px"
     >
+      <el-upload
+        class="upload-demo"
+        action="/v1/user/head"
+        :on-success="handlesuccess"
+        multiple
+        ref="upload"
+        :limit="1"
+        :headers="{ Authorization: `Bearer ${$store.getters.token}` }"
+        :on-remove="remove"
+      >
+        <el-avatar :size="64" :src="info.head_thumb" style="margin-left: 50px">
+          <img src="@/assets/images/default-user.png" />
+        </el-avatar>
+      </el-upload>
       <el-form :model="IDSetup" :rules="rules" ref="IDSetup">
-        <el-form-item label="头像" size="mini" prop="head_thumb" label-width="100px">
-          <el-input v-model="IDSetup.head_thumb" maxlength="20" show-word-limit style="width: 100%"></el-input>
+        <el-form-item label="用户id" size="mini" prop="id" label-width="100px">
+          <span>{{ info.id }}</span>
         </el-form-item>
         <el-form-item label="用户名" size="mini" prop="name" label-width="100px">
-          <el-input v-model="IDSetup.name" maxlength="20" show-word-limit style="width: 100%"></el-input>
+          <el-input
+            v-show="nameShow"
+            v-model="IDSetup.name"
+            maxlength="20"
+            show-word-limit
+            style="width: 50%"
+          ></el-input>
+          <el-button v-show="nameShow" size="mini" @click="nameShow = false" style="margin-left: 10px">取消</el-button>
+          <el-button v-show="nameShow" size="mini" @click="changeName" type="primary" style="margin-left: 10px"
+            >确定</el-button
+          >
+          <span v-show="!nameShow">{{ info.name }}</span>
+          <el-button
+            v-show="!nameShow"
+            size="mini"
+            @click="nameShow = true"
+            icon="el-icon-edit"
+            style="margin-left: 10px"
+            >修改</el-button
+          >
         </el-form-item>
         <el-form-item label="邮箱" size="mini" prop="email" label-width="100px">
-          <el-input v-model="IDSetup.email" maxlength="20" show-word-limit style="width: 100%"></el-input>
+          <!-- <el-input v-model="IDSetup.email" maxlength="20" show-word-limit style="width: 100%"></el-input> -->
+          <span>{{ info.email }}</span>
+          <el-button
+            v-show="!nameShow"
+            size="mini"
+            @click="isEditDialogVisible1 = true"
+            icon="el-icon-edit"
+            style="margin-left: 10px"
+            >修改</el-button
+          >
         </el-form-item>
         <el-form-item label="电话" size="mini" prop="phone" label-width="100px">
-          <el-input v-model="IDSetup.phone" maxlength="20" show-word-limit style="width: 100%"></el-input>
+          <!-- <el-input v-model="IDSetup.phone" maxlength="20" show-word-limit style="width: 100%"></el-input> -->
+          <span>{{ info.phone }}</span>
+          <el-button
+            v-show="!nameShow"
+            size="mini"
+            @click="isEditDialogVisible2 = true"
+            icon="el-icon-edit"
+            style="margin-left: 10px"
+            >修改</el-button
+          >
+        </el-form-item>
+        <el-form-item label="创建时间" size="mini" prop="create_time" label-width="100px">
+          <span>{{ $moment(info.create_time).format('YYYY-MM-DD HH:mm:ss') }}</span>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
-        <el-button size="mini" @click="isEditDialogVisible = false">取 消</el-button>
-        <el-button size="mini" type="primary" @click="save()">确 定</el-button>
+        <el-button size="mini" @click="isEditDialogVisible = false">确 定</el-button>
+        <!-- <el-button size="mini" type="primary" @click="save()">确 定</el-button> -->
+      </div>
+    </el-dialog>
+    <el-dialog :title="'修改邮箱'" width="35%" :visible.sync="isEditDialogVisible1" append-to-body>
+      <el-form :model="changeEmail" ref="changeEmail" label-position="left" label-width="100px" class="demo-ruleForm">
+        <el-form-item prop="username" label="邮箱" size="mini">
+          <el-input
+            maxlength="32"
+            type="text"
+            name="username"
+            v-model="changeEmail.email"
+            placeholder="请输入新的邮箱"
+            autofocus="autofocus"
+          ></el-input>
+        </el-form-item>
+        <el-form-item prop="verification" label="验证码" size="mini">
+          <el-input type="text" placeholder="请输入验证码" v-model="changeEmail.verification" name="verification">
+            <el-button slot="append" type="primary" :loading="isgettingLoading1" @click="captcha1()">{{
+              buttonName1
+            }}</el-button>
+          </el-input>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button size="mini" @click="isEditDialogVisible1 = false"> 取消 </el-button>
+        <el-button size="mini" type="primary" @click="changeEmail1()"> 确定 </el-button>
+      </div>
+    </el-dialog>
+    <el-dialog
+      :title="'修改电话'"
+      width="35%"
+      :visible.sync="isEditDialogVisible2"
+      :close-on-click-modal="false"
+      append-to-body
+    >
+      <el-form :model="changePhone" ref="changePhone" label-position="left" label-width="100px" class="demo-ruleForm">
+        <el-form-item prop="username" label="电话" size="mini">
+          <el-input
+            maxlength="32"
+            type="text"
+            name="username"
+            v-model="changePhone.phone"
+            placeholder="请输入新的电话"
+            autofocus="autofocus"
+          ></el-input>
+        </el-form-item>
+        <el-form-item prop="verification" label="验证码" size="mini">
+          <el-input type="text" placeholder="请输入验证码" v-model="changePhone.verification" name="verification">
+            <el-button slot="append" type="primary" :loading="isgettingLoading2" @click="captcha2()">{{
+              buttonName2
+            }}</el-button>
+          </el-input>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button size="mini" @click="isEditDialogVisible2 = false"> 取消 </el-button>
+        <el-button size="mini" type="primary" @click="changePhone1()"> 确定 </el-button>
       </div>
     </el-dialog>
   </header>
@@ -47,6 +157,8 @@
 
 <script>
 import userApi from '@/api/user'
+import api from '@/api/account'
+
 export default {
   name: 'Header',
   data() {
@@ -76,25 +188,39 @@ export default {
     }
     return {
       isEditDialogVisible: false,
-      name: '',
+      info: {},
       IDSetup: {
         head_thumb: '',
         name: '',
         email: '',
         phone: ''
       },
+      changeEmail: {
+        email: '',
+        verification: ''
+      },
+      changePhone: {
+        phone: '',
+        verification: ''
+      },
+      nameShow: false,
+      isEditDialogVisible1: false,
+      isgettingLoading1: false,
+      buttonName1: '获取验证码',
+      time1: 60,
+      time2: 60,
+      buttonName2: '获取验证码',
+      isEditDialogVisible2: false,
+      isgettingLoading2: false,
       rules: {
-        name: [{ required: true, message: '仓库名称不能为空', trigger: 'blur' }],
         email: [
           {
-            required: true,
             validator: checkEmail,
             trigger: ['blur', 'change']
           }
         ],
         phone: [
           {
-            required: true,
             validator: checkPhone,
             trigger: ['blur', 'change']
           }
@@ -107,7 +233,7 @@ export default {
       .info()
       .then((response) => {
         console.log(response)
-        this.name = response.data.data.name
+        this.info = response.data.data
       })
       .catch(() => {})
   },
@@ -120,8 +246,135 @@ export default {
       }
     },
     setup() {
-      console.log(1)
       this.isEditDialogVisible = true
+      this.IDSetup.name = this.info.name
+      this.IDSetup.email = this.info.email
+      this.IDSetup.phone = this.info.phone
+    },
+    handlesuccess(response) {
+      if (response.code == 0) {
+        this.$message({ message: '上传成功。', type: 'success' })
+      } else {
+        this.$message({ message: '上传失败。', type: 'error' })
+      }
+      this.$refs.upload.clearFiles()
+    },
+    remove() {
+      this.$refs.upload.clearFiles()
+    },
+    changeName() {
+      userApi
+        .changeName({ name: this.IDSetup.name })
+        .then((response) => {
+          if (response.data.code == 0) {
+            this.$message({ message: '修改成功。', type: 'success' })
+            this.nameShow = false
+            this.info.name = this.IDSetup.name
+          } else {
+            this.$message({ message: '修改失败。', type: 'error' })
+          }
+        })
+        .catch(() => {})
+    },
+    captcha1() {
+      if (this.changeEmail.email) {
+        let email = /^(\w-*\.*)+@(\w-?)+(\.\w{2,})+$/
+        if (email.test(this.changeEmail.email)) {
+          this.isgettingLoading1 = true
+          let content = {}
+          content.username = this.changeEmail.email
+          content.type = 'email'
+          api
+            .verification(content)
+            .then((response) => {
+              if (response.data.code === 0) {
+                this.$message({ message: '获取成功。', type: 'success' })
+              } else {
+                this.$message({ message: '获取失败。', type: 'error' })
+              }
+              let me = this
+              let interval = window.setInterval(function () {
+                me.buttonName1 = '(' + me.time1 + '秒)后可重新发送'
+                --me.time1
+                if (me.time1 < 0) {
+                  me.buttonName1 = '重新发送'
+                  me.isgettingLoading1 = false
+                  window.clearInterval(interval)
+                  me.time1 = 60
+                }
+              }, 1000)
+            })
+            .catch(() => {})
+            .then(() => {})
+        } else {
+          this.$message.error('邮箱格式填写不正确')
+        }
+      } else {
+        this.$message.error('请先填写邮箱')
+      }
+    },
+    changeEmail1() {
+      userApi
+        .changeEmail({ email: this.changeEmail.email, verification: this.changeEmail.verification })
+        .then((response) => {
+          if (response.data.code === 0) {
+            this.$message({ message: '修改成功。', type: 'success' })
+            this.info.email = this.changeEmail.email
+            this.isEditDialogVisible1 = false
+          } else {
+            this.$message({ message: '修改失败。', type: 'error' })
+          }
+        })
+    },
+    captcha2() {
+      if (this.changePhone.phone) {
+        let phone = /^1\d{10}$/
+        if (phone.test(this.changePhone.phone)) {
+          this.isgettingLoading2 = true
+          let content = {}
+          content.username = this.changePhone.phone
+          content.type = 'phone'
+          api
+            .verification(content)
+            .then((response) => {
+              if (response.data.code === 0) {
+                this.$message({ message: '获取成功。', type: 'success' })
+              } else {
+                this.$message({ message: '获取失败。', type: 'error' })
+              }
+              let me = this
+              let interval = window.setInterval(function () {
+                me.buttonName2 = '(' + me.time2 + '秒)后可重新发送'
+                --me.time2
+                if (me.time2 < 0) {
+                  me.buttonName2 = '重新发送'
+                  me.isgettingLoading2 = false
+                  window.clearInterval(interval)
+                  me.time2 = 60
+                }
+              }, 1000)
+            })
+            .catch(() => {})
+            .then(() => {})
+        } else {
+          this.$message.error('电话格式填写不正确')
+        }
+      } else {
+        this.$message.error('请先填写电话')
+      }
+    },
+    changePhone1() {
+      userApi
+        .changePhone({ phone: this.changePhone.phone, verification: this.changePhone.verification })
+        .then((response) => {
+          if (response.data.code === 0) {
+            this.$message({ message: '修改成功。', type: 'success' })
+            this.info.phone = this.changeEmail.phone
+            this.isEditDialogVisible2 = false
+          } else {
+            this.$message({ message: '修改失败。', type: 'error' })
+          }
+        })
     },
     save() {}
   }
