@@ -66,24 +66,14 @@
         <el-form-item label="邮箱" size="mini" prop="email" label-width="100px">
           <!-- <el-input v-model="IDSetup.email" maxlength="20" show-word-limit style="width: 100%"></el-input> -->
           <span>{{ info.email }}</span>
-          <el-button
-            v-show="!nameShow"
-            size="mini"
-            @click="isEditDialogVisible1 = true"
-            icon="el-icon-edit"
-            style="margin-left: 10px"
+          <el-button size="mini" @click="isEditDialogVisible1 = true" icon="el-icon-edit" style="margin-left: 10px"
             >修改</el-button
           >
         </el-form-item>
         <el-form-item label="电话" size="mini" prop="phone" label-width="100px">
           <!-- <el-input v-model="IDSetup.phone" maxlength="20" show-word-limit style="width: 100%"></el-input> -->
           <span>{{ info.phone }}</span>
-          <el-button
-            v-show="!nameShow"
-            size="mini"
-            @click="isEditDialogVisible2 = true"
-            icon="el-icon-edit"
-            style="margin-left: 10px"
+          <el-button size="mini" @click="isEditDialogVisible2 = true" icon="el-icon-edit" style="margin-left: 10px"
             >修改</el-button
           >
         </el-form-item>

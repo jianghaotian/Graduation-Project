@@ -20,7 +20,7 @@
         <p class="allProject-title">加入的仓库</p>
         <div class="project" v-for="nav in otherList" :key="'nav' + nav.id">
           <router-link class="link" :to="'/repository/' + nav.id">
-            <p class="title">{{ nav.title }}</p>
+            <p class="title">{{ nav.name }}</p>
             <p class="desc"></p>
             <p class="remark">
               <span>
@@ -28,7 +28,7 @@
                 <i>{{ nav.user }}</i>
                 "创建 -->
               </span>
-              <span>{{ nav.create_time }}</span>
+              <span>{{ $moment(nav.create_time).format('YYYY-DD-MM HH:mm:ss') }}</span>
             </p>
           </router-link>
         </div>

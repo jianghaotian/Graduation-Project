@@ -43,6 +43,18 @@ export default {
       url: '/v1/repository/member/add',
       method: 'post',
       data: data
+    }),
+  memberType: (data) =>
+    request({
+      url: '/v1/repository/member/type',
+      method: 'post',
+      data: data
+    }),
+  deleteMember: (data) =>
+    request({
+      url: '/v1/repository/member/delete',
+      method: 'post',
+      data: data
     })
 }
 // export function login(data) {

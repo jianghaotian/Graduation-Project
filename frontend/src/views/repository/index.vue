@@ -122,7 +122,12 @@
                   scope.row.name
                 }}</span>
                 <!-- </div> -->
-                <el-dropdown @command="createView" class="pointerIcon" trigger="click" v-show="type != 3">
+                <el-dropdown
+                  @command="createView"
+                  class="pointerIcon"
+                  trigger="click"
+                  v-show="scope.row.icon != '#icon-file-b-2' || type != 3"
+                >
                   <i v-show="showClickIcon == true && scope.row.id == rowid" class="el-icon-more"></i>
                   <el-dropdown-menu slot="dropdown">
                     <el-dropdown-item command="下载" v-show="scope.row.icon != '#icon-file-b-2'">
@@ -142,8 +147,8 @@
                     <el-dropdown-item
                       @click.native="fileHistory(scope.row.id)"
                       v-show="scope.row.icon != '#icon-file-b-2'"
-                      command="操作歷史"
-                      >操作歷史</el-dropdown-item
+                      command="操作历史"
+                      >操作历史</el-dropdown-item
                     >
                   </el-dropdown-menu>
                 </el-dropdown>
@@ -199,7 +204,7 @@
                   <svg class="icon" aria-hidden="true">
                     <use :xlink:href="item.icon"></use>
                   </svg>
-                  <span>{{ item.type }}{{ item.file_name }}</span>
+                  <span>{{ item.type }} {{ item.file_name }}</span>
                 </a>
               </div>
             </div>
@@ -222,23 +227,44 @@
                 >
                   <el-option v-for="item in options" :key="item.id" :label="item.name" :value="item.id"> </el-option>
                 </el-select>
-                <el-radio v-model="radio" label="1">maintainer</el-radio>
+                <el-row style="margin-top: 10px; margin-bottom: 10px">
+                  <span style="line-height: 28px">成员权限</span>
+                  <el-select size="mini" style="width: 70%; float: right" v-model="radio" placeholder="请选择">
+                    <el-option v-for="item in types" :key="item.id" :label="item.type" :value="item.id"> </el-option>
+                  </el-select>
+                </el-row>
+                <!-- <el-radio v-model="radio" label="1">maintainer</el-radio>
                 <el-radio v-model="radio" label="2">developer</el-radio>
-                <el-radio v-model="radio" label="3">reporter</el-radio>
+                <el-radio v-model="radio" label="3">reporter</el-radio> -->
                 <el-button style="width: 100%" @click="addMember" type="primary" size="mini"> 添加 </el-button>
               </div>
               <el-row style="padding-bottom: 10px">成员列表({{ members.length }})</el-row>
-              <div v-for="item in members" :key="item.id" class="card">
+              <div v-for="item in members" :key="item.id" class="card" @click="showFalse(item)">
                 <el-avatar :size="32" src="https://empty">
                   <img src="@/assets/images/default-user.png" />
                 </el-avatar>
                 <span class="memberName">{{ item.name }}</span>
                 <el-row class="status">
                   <span v-show="item.name == name" class="my">本人</span>
-                  <span v-if="item.type == 0">owner</span>
-                  <span v-else-if="item.type == 1">maintainer</span>
-                  <span v-else-if="item.type == 2">developer</span>
-                  <span v-else>reporter</span>
+                  <span v-show="item.show || item.type == 0 || item.name == name || type == 2 || type == 3">{{
+                    item.status
+                  }}</span>
+                  <el-select
+                    v-show="!item.show && item.type != 0 && item.name != name && (type == 0 || type == 1)"
+                    size="mini"
+                    style="width: 50%; height: 15px"
+                    v-model="changeStatus"
+                    placeholder="请选择"
+                    id="changeStatus"
+                    @change="memberType(item)"
+                  >
+                    <el-option v-for="item in types" :key="item.id" :label="item.type" :value="item.id"> </el-option>
+                  </el-select>
+                  <i
+                    v-show="!item.show && item.type != 0 && item.name != name && (type == 0 || type == 1)"
+                    class="el-icon-delete"
+                    @click="deleteMember(item)"
+                  ></i>
                 </el-row>
               </div>
             </div>
@@ -279,7 +305,7 @@
     </el-container>
     <el-dialog :title="'文件操作歷史'" :visible.sync="showHistory" :close-on-click-modal="false">
       <el-table ref="table" v-loading="historyLoading" :data="fileHistoryList" style="width: 100%">
-        <el-table-column min-width="5" prop="name" label="文件名" style="align-items: center">
+        <el-table-column min-width="2" prop="name" label="文件名" style="align-items: center">
           <template slot-scope="scope">
             <!-- <div style="display: inline-block" @click="getFloder(scope.row.folder_id)"> -->
             <svg class="icon" aria-hidden="true">
@@ -288,7 +314,7 @@
             <span>{{ scope.row.file_name }}</span>
           </template>
         </el-table-column>
-        <el-table-column min-width="2" prop="type" label="操作類型"></el-table-column>
+        <el-table-column min-width="1" prop="type" label="操作類型"></el-table-column>
         <el-table-column min-width="2" prop="time" label="修改时间">
           <template slot-scope="scope">
             <span>{{ $moment(scope.row.time).format('YYYY-MM-DD HH:mm:ss') }}</span>
@@ -347,7 +373,14 @@ export default {
       radio: '',
       fileHistoryList: [],
       showHistory: false,
-      historyLoading: false
+      historyLoading: false,
+      types: [
+        { id: 1, type: 'maintainer' },
+        { id: 2, type: 'developer' },
+        { id: 3, type: 'reporter' }
+      ],
+      changeStatus: '',
+      list: []
     }
   },
   watch: {
@@ -386,10 +419,47 @@ export default {
     this.initData()
   },
   methods: {
-    // a(folder_id) {
-    //   console.log(this.$route.path)
-    //   console.log(folder_id)
-    // },
+    showFalse(item) {
+      this.members[this.members.indexOf(item)].show = false
+      let old = Object.assign([], this.members)
+      this.members = old
+      this.changeStatus = item.status
+    },
+    memberType(item) {
+      if (item.type == this.changeStatus) {
+        this.members[this.members.indexOf(item)].show = true
+        let old = Object.assign([], this.members)
+        this.members = old
+      } else {
+        repositoryApi.memberType({ repo_id: this.repoId, user_id: item.id, type: this.changeStatus }).then((res) => {
+          if (res.data.code == 0) {
+            this.$message({ message: '修改成功。', type: 'success' })
+            this.getMember()
+          } else {
+            this.$message({ message: '修改失败。', type: 'error' })
+          }
+        })
+      }
+    },
+    deleteMember(item) {
+      this.$confirm('此操作将会把该成员移出仓库, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      })
+        .then(() => {
+          repositoryApi.deleteMember({ repo_id: this.repoId, user_id: item.id }).then((res) => {
+            if (res.data.code == 0) {
+              this.$message({ message: '移出成功。', type: 'success' })
+              this.getMember()
+            } else {
+              this.$message({ message: '移出失败。', type: 'error' })
+            }
+          })
+        })
+        .then(() => {})
+        .catch(() => {})
+    },
     initData() {
       this.isSearchLoading = true
       this.getFileList()
@@ -450,6 +520,12 @@ export default {
           break
         case 'pdf':
           icon = '#icon-file-b-8'
+          break
+        case 'jpg':
+          icon = '#icon-file-b-5'
+          break
+        case 'png':
+          icon = '#icon-file-b-5'
           break
         case 'zip':
           icon = '#icon-file_zip'
@@ -653,10 +729,18 @@ export default {
         .then((response) => {
           this.members = response.data.data
           for (let i = 0; i < this.members.length; i++) {
+            this.members[i].show = true
+            if (this.members[i].type == 0) {
+              this.members[i].status = 'owner'
+            } else if (this.members[i].type == 1) {
+              this.members[i].status = 'maintainer'
+            } else if (this.members[i].type == 2) {
+              this.members[i].status = 'developer'
+            } else {
+              this.members[i].status = 'reporter'
+            }
             if (this.members[i].name == this.name) {
               this.type = this.members[i].type
-              // this.type = 2
-              break
             }
           }
         })
@@ -874,6 +958,16 @@ export default {
     }
     .el-radio__label {
       padding-left: 0;
+    }
+  }
+  .status {
+    .el-input--mini .el-input__inner {
+      height: 20px;
+      line-height: 20px;
+    }
+    .el-input__prefix,
+    .el-input__suffix {
+      height: 25px;
     }
   }
 }
