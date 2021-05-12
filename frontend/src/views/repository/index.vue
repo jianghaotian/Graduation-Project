@@ -51,7 +51,7 @@
             :data="data"
             :headers="{ Authorization: `Bearer ${$store.getters.token}` }"
             :on-remove="remove"
-            v-show="type == 0 || type == 1"
+            v-show="type == 0 || type == 1 || type == 2"
           >
             <el-button size="mini" icon="el-icon-upload" style="margin-right: 10px">上传</el-button>
           </el-upload>
@@ -224,6 +224,7 @@
                   :loading="loading"
                   size="mini"
                   style="width: 100%"
+                  clearable
                 >
                   <el-option v-for="item in options" :key="item.id" :label="item.name" :value="item.id"> </el-option>
                 </el-select>
@@ -748,7 +749,7 @@ export default {
     },
     getHistory() {
       historyApi.historyList({ repo_id: this.repoId }).then((response) => {
-        this.operationsHistory = response.data.data.list
+        this.operationsHistory = response.data.data.list.reverse()
         for (let i = 0; i < this.operationsHistory.length; i++) {
           this.operationsHistory[i].icon = this.fileType(this.operationsHistory[i].file_name)
           if (this.operationsHistory[i].type == 'new') {
@@ -777,16 +778,24 @@ export default {
     },
     addMember() {
       // console.log(this.radio, this.value)
-      repositoryApi
-        .addMember({ repo_id: this.repoId, user_id: Number(this.value), type: Number(this.radio) })
-        .then((response) => {
-          if (response.data.code == 0) {
-            this.$message({ message: '添加成功。', type: 'success' })
-            this.getMember()
-          } else {
-            this.$message({ message: '添加失败。', type: 'error' })
-          }
-        })
+      if (!this.value) {
+        this.$message({ message: '加入成员为空。', type: 'warning' })
+      }
+      if (!this.radio) {
+        this.$message({ message: '未选择成员权限。', type: 'warning' })
+      }
+      if (this.value && this.radio) {
+        repositoryApi
+          .addMember({ repo_id: this.repoId, user_id: Number(this.value), type: Number(this.radio) })
+          .then((response) => {
+            if (response.data.code == 0) {
+              this.$message({ message: '添加成功。', type: 'success' })
+              this.getMember()
+            } else {
+              this.$message({ message: '添加失败。', type: 'error' })
+            }
+          })
+      }
     },
     saveData() {
       console.log(this.repositoryName, this.repositoryDesc)
