@@ -304,7 +304,7 @@
         </el-tabs>
       </el-aside>
     </el-container>
-    <el-dialog :title="'文件操作歷史'" :visible.sync="showHistory" :close-on-click-modal="false">
+    <el-dialog :title="'文件操作历史'" :visible.sync="showHistory" :close-on-click-modal="false">
       <el-table ref="table" v-loading="historyLoading" :data="fileHistoryList" style="width: 100%">
         <el-table-column min-width="2" prop="name" label="文件名" style="align-items: center">
           <template slot-scope="scope">
@@ -331,7 +331,7 @@
         </el-table-column>
       </el-table>
       <div slot="footer" class="dialog-footer">
-        <el-button size="mini" @click="showHistory = false"> 確 定 </el-button>
+        <el-button size="mini" @click="showHistory = false"> 确 定 </el-button>
       </div>
     </el-dialog>
   </div>
