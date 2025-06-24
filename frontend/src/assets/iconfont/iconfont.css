@@ -1,0 +1,67 @@
+@font-face {
+  font-family: "iconfont"; /* Project id 2510395 */
+  src: url('iconfont.woff2?t=1620360759675') format('woff2'),
+       url('iconfont.woff?t=1620360759675') format('woff'),
+       url('iconfont.ttf?t=1620360759675') format('truetype');
+}
+
+.iconfont {
+  font-family: "iconfont" !important;
+  font-size: 16px;
+  font-style: normal;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.icon-wenjianleixing1:before {
+  content: "\e6c5";
+}
+
+.icon-file_css:before {
+  content: "\e6bd";
+}
+
+.icon-file_code:before {
+  content: "\e6be";
+}
+
+.icon-file_zip:before {
+  content: "\e6bf";
+}
+
+.icon-file-b-:before {
+  content: "\e652";
+}
+
+.icon-file-b-1:before {
+  content: "\e653";
+}
+
+.icon-file-b-2:before {
+  content: "\e654";
+}
+
+.icon-file-b-3:before {
+  content: "\e655";
+}
+
+.icon-file-b-4:before {
+  content: "\e656";
+}
+
+.icon-file-b-5:before {
+  content: "\e657";
+}
+
+.icon-file-b-6:before {
+  content: "\e658";
+}
+
+.icon-file-b-7:before {
+  content: "\e659";
+}
+
+.icon-file-b-8:before {
+  content: "\e65a";
+}
+
